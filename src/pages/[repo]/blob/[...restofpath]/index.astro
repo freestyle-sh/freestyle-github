@@ -6,6 +6,8 @@ import { FileIcon } from "../../../../lib/icon-map";
 
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 const latest = await simpleRepo.getLatestCodebaseMetadata();
+const pathBeforeBlob = Astro.url.pathname.slice(0, Astro.url.pathname.length - Astro.params.restofpath?.length!)
+
 ---
 
 <Layout title="Blobalia">
@@ -19,7 +21,7 @@ const latest = await simpleRepo.getLatestCodebaseMetadata();
                 fileMeta.fileType === "file"?
                 <a
                   class=" hover:bg-white/10 rounded-lg px-2 py-1 transition-all flex flex-row items-center focus:bg-white/20"
-                  href="#"
+                  href={pathBeforeBlob + key}
                 >
                   <FileIcon metadata={{ ...fileMeta, path: key }} />
 
