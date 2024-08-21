@@ -10,7 +10,7 @@ export interface RepoMetadata {
 @cloudstate
 export class SimpleRepo {
     static readonly id = "simple-repo";
-    name = "Simple Repo";
+    name = "Simple-Repo".toLowerCase();
     description = "A simple repo that stores a simple codebase";
     link = 'https://www.freestyle.sh'
     codebase = {
