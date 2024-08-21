@@ -1,6 +1,8 @@
 import { format } from "timeago.js";
 import type { FileMetadata } from "../cloudstate/simple-repo";
 import { FileIcon } from "../lib/icon-map";
+import IconFileDirectory from "./icons/FileDirectory";
+import IconFile from "./icons/File";
 
 export const FileRow = (props: {
     fileMetadata: FileMetadata & {
@@ -8,9 +10,11 @@ export const FileRow = (props: {
     };
     isLast?: boolean;
 }) => {
-    const { fileMetadata: file, fileMetadata: { path } } = props;
     const isLast = props.isLast ?? false;
-    
+    const {
+        fileMetadata: file,
+        fileMetadata: { path },
+    } = props;
     return (
         <div
             key={path}
@@ -21,7 +25,7 @@ export const FileRow = (props: {
                 <FileIcon metadata={{ ...file, path }} />
                 <a className="hover:text-blue-400 hover:underline" href="#">
                     {path}
-                </a >
+                </a>
             </div>
             <div className="text-xs text-gray-400 text-nowrap overflow-ellipsis overflow-hidden items-center flex">
                 {file.lastestCommitMessage}
