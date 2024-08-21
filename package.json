@@ -22,6 +22,7 @@
     "astro": "^4.6.1",
     "freestyle-deno-astro-adapter": "^5.0.4",
     "freestyle-sh": "^0.2.33",
+    "material-file-icons": "^2.4.0",
     "nanostores": "^0.10.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -30,6 +31,7 @@
     "styled-components": "^5.3.11",
     "svelte": "^4.2.15",
     "tailwindcss": "^3.4.10",
+    "timeago.js": "^4.0.2",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
