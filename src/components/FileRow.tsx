@@ -1,6 +1,5 @@
 import { format } from "timeago.js";
 import type { FileMetadata } from "../cloudstate/simple-repo";
-import { FileIcon } from "../lib/icon-map";
 import IconFileDirectory from "./icons/FileDirectory";
 import IconFile from "./icons/File";
 
@@ -8,34 +7,33 @@ export const FileRow = (props: {
   fileMetadata: FileMetadata & {
     path: string;
   };
-  isLast?: boolean;
 }) => {
   const {
     fileMetadata: file,
     fileMetadata: { path },
   } = props;
-  const isLast = props.isLast ?? false;
 
   return (
     <div
       key={path}
       className={
-        (isLast ? "border-b" : "") +
-        " p-2 border-gray-700 grid grid-cols-[2fr,1fr,1fr] hover:bg-[#151b23]"
+        "text-sm px-4 py-3 border-b border-gray-700 last:border-0 grid grid-cols-[1fr,auto] md:grid-cols-[1fr,1fr,auto] gap-10 hover:bg-[#151b23]"
       }
     >
-      <div className="text-gray-400 w-full flex flex-row items-center ">
+      <div className="text-gray-400 w-full flex items-center overflow-hidden shrink-0 gap-2">
         {file.fileType === "dir" ? (
           <IconFileDirectory isFilled />
         ) : (
           <IconFile />
         )}
-        <span>{path}</span>
+        <span className="text-gray-100 truncate hover:text-blue-500 hover:underline cursor-pointer">
+          {path}
+        </span>
       </div>
-      <div className="text-xs text-gray-400 text-nowrap overflow-ellipsis overflow-hidden items-center flex">
+      <div className="text-gray-400 items-center overflow-hidden truncate hidden md:block hover:text-blue-500 hover:underline cursor-pointer">
         {file.lastestCommitMessage}
       </div>
-      <div className="text-xs text-gray-400 text-end w-full flex flex-row items-center justify-end">
+      <div className="text-gray-400 flex items-center justify-end overflow-hidden truncate">
         {format(file.lastestCommitDate)}
       </div>
     </div>
