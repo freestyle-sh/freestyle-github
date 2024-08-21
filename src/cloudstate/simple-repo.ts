@@ -20,11 +20,11 @@ export type CodebaseMetadata = {
   };
 };
 
+export type FileType = "dir" | "file";
 export interface FileMetadata {
-    isDir: boolean;
-    isFile: boolean;
-    lastestCommitMessage: string;
-    lastestCommitDate: number;
+  fileType: FileType;
+  lastestCommitMessage: string;
+  lastestCommitDate: number;
 }
 
 @cloudstate
@@ -59,38 +59,33 @@ export class SimpleRepo {
       totalCommits: 1,
       files: {
         "filename.ts": {
-          isDir: false,
-          isFile: true,
+          fileType: "file",
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },
         src: {
-          isDir: true,
-          isFile: false,
-          lastestCommitMessage: "Initial commitafgasdgsdg this one is super long and will not be allowed to go to two lines god damn you",
+          fileType: "dir",
+          lastestCommitMessage:
+            "Initial commitafgasdgsdg this one is super long and will not be allowed to go to two lines god damn you",
           lastestCommitDate: Date.now(),
         },
         components: {
-          isDir: true,
-          isFile: false,
+          fileType: "dir",
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },
         icons: {
-          isDir: true,
-          isFile: false,
+          fileType: "dir",
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },
         layouts: {
-          isDir: true,
-          isFile: false,
+          fileType: "dir",
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },
         "package.json": {
-          isDir: false,
-          isFile: true,
+          fileType: "file",
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },

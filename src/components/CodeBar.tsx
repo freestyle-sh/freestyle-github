@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "./button";
+import Button from "./Button";
 import IconGitBranch from "./icons/GitBranch";
 import IconCode from "./icons/Code";
 import Input from "./Input";

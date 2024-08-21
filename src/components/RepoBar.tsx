@@ -1,5 +1,5 @@
 import type { RepoMetadata } from "../cloudstate/simple-repo";
-import Button from "./button";
+import Button from "./Button";
 import CountIndicator from "./CountIndicator";
 import IconRepoForked from "./icons/Fork";
 import IconStar from "./icons/Star";
