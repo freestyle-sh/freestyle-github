@@ -19,9 +19,9 @@ export const FileRow = (props: {
         >
             <div className="text-gray-400 w-full flex flex-row items-center ">
                 <FileIcon metadata={{ ...file, path }} />
-                <span>
+                <a className="hover:text-blue-400 hover:underline" href="#">
                     {path}
-                </span>
+                </a >
             </div>
             <div className="text-xs text-gray-400 text-nowrap overflow-ellipsis overflow-hidden items-center flex">
                 {file.lastestCommitMessage}

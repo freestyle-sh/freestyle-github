@@ -15,10 +15,12 @@ export type CodebaseMetadata = {
     shortHash: string;
   };
   totalCommits: number;
-  files: {
-    [path: string]: FileMetadata;
-  };
+  files: FileSystemMetadata;
 };
+
+export interface FileSystemMetadata {
+    [path: string]: FileMetadata;
+}
 
 export interface FileMetadata {
     isDir: boolean;
@@ -49,7 +51,7 @@ export class SimpleRepo {
     };
   }
 
-  getLatestCodebaseMetadata(path: string): CodebaseMetadata {
+  getLatestCodebaseMetadata(): CodebaseMetadata {
     return {
       latestCommit: {
         message: "Initial commit",
@@ -97,4 +99,5 @@ export class SimpleRepo {
       },
     };
   }
+
 }
