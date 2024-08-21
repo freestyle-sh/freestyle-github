@@ -1,6 +1,6 @@
-import fs from "@zenfs/core";
+import fs, { type StoreFS } from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
-import { createFS } from "./filesystem";
+import { type CloudStore, createFS } from "./filesystem";
 
 export interface RepoMetadata {
   name: string;
@@ -37,13 +37,13 @@ export class Repository {
   owner: string;
   name: string;
   repoId: string;
-  rawData: Blob;
+  store: StoreFS<CloudStore>;
 
-  constructor(owner: string, name: string, data: Blob) {
+  constructor(owner: string, name: string, store: StoreFS<CloudStore>) {
     this.owner = owner;
     this.name = name;
     this.repoId = `${owner}/${name}`;
-    this.rawData = data;
+    this.store = store;
   }
 
   mount() {

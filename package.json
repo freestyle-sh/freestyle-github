@@ -13,7 +13,6 @@
     "@astrojs/react": "^3.3.2",
     "@astrojs/svelte": "^5.4.0",
     "@astrojs/tailwind": "^5.1.0",
-    "@isomorphic-git/lightning-fs": "^4.6.0",
     "@nanostores/query": "^0.3.3",
     "@nanostores/react": "^0.7.2",
     "@primer/react": "^36.27.0",
