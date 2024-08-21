@@ -1,5 +1,5 @@
 import type { RepoMetadata } from "../cloudstate/simple-repo";
-import Button from "./Button";
+import Button from "./button";
 import CountIndicator from "./CountIndicator";
 import IconRepoForked from "./icons/Fork";
 import IconStar from "./icons/Star";
@@ -7,7 +7,7 @@ import IconStar from "./icons/Star";
 export const RepoBar = (props: { repoMetadata: RepoMetadata }) => {
   const { repoMetadata } = props;
   return (
-    <div className="px-8 pt-4">
+    <div className="px-12 pt-4">
       <div className="flex flex-row justify-between">
         <h1 className="dark:text-white text-xl font-semibold">
           {repoMetadata.name}
