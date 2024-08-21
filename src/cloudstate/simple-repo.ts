@@ -34,25 +34,25 @@ export interface FileMetadata {
 
 @cloudstate
 export class Repository {
+  readonly id: string;
   owner: string;
   name: string;
-  repoId: string;
   store: StoreFS<CloudStore>;
 
   constructor(owner: string, name: string, store: StoreFS<CloudStore>) {
+    this.id = `${owner}/${name}`;
     this.owner = owner;
     this.name = name;
-    this.repoId = `${owner}/${name}`;
     this.store = store;
   }
 
   mount() {
     const FS = createFS();
-    return fs.mount(this.repoId, FS);
+    return fs.mount(this.id, FS);
   }
 
   unmount() {
-    fs.umount(this.repoId);
+    fs.umount(this.id);
   }
 
   [Symbol.dispose]() {
@@ -70,11 +70,11 @@ export class RepoIndex {
     const repoId = `${repo.owner}/${repo.name}`;
     const existingRepo = this.repos.get(repoId);
     if (existingRepo) {
-      return existingRepo;
+      return existingRepo.id;
     }
     const newRepo = new Repository(repo.owner, repo.name, createFS());
     this.repos.set(repoId, newRepo);
-    return newRepo;
+    return newRepo.id;
   }
 }
 
