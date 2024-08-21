@@ -66,12 +66,15 @@ export class RepoIndex {
 
   repos: Map<string, Repository> = new Map();
 
-  addRepo(repo: Repository) {
-    this.repos.set(repo.repoId, repo);
-  }
-
-  getRepo(name: string) {
-    return this.repos.get(name);
+  getOrCreateRepo(repo: { owner: string; name: string }) {
+    const repoId = `${repo.owner}/${repo.name}`;
+    const existingRepo = this.repos.get(repoId);
+    if (existingRepo) {
+      return existingRepo;
+    }
+    const newRepo = new Repository(repo.owner, repo.name, createFS());
+    this.repos.set(repoId, newRepo);
+    return newRepo;
   }
 }
 
