@@ -1,5 +1,5 @@
 import React from "react";
-import { LinkIcon } from "./icons/link";
+import { LinkIcon } from "./icons/Link";
 import type { RepoMetadata } from "../cloudstate/simple-repo";
 
 export const RepoSidebar = (props: { repoMetadata: RepoMetadata }) => {
