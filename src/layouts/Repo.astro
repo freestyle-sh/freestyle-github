@@ -1,0 +1,12 @@
+---
+import type { RepoMetadata } from "../cloudstate/simple-repo";
+const { repoMetadata } = Astro.props as {
+  repoMetadata: RepoMetadata;
+};
+---
+<div class="px-8 py-4">
+<h1 class="dark:text-white text-xl font-semibold">
+  {repoMetadata.name}
+</h1>
+<br/>
+</div>
