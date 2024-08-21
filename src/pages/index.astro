@@ -6,8 +6,9 @@ import {RepoLayout} from "../layouts/Repo.tsx";
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo")
 
 const repoInfo = await simpleRepo.getInfo()
+const codeMeta = await simpleRepo.getLatestCodebaseMetadata("./")
 ---
 
 <Layout title="Freestyle.sh Project">
-  <RepoLayout client:load repoMetadata={repoInfo} >
+  <RepoLayout client:load repoMetadata={repoInfo} codeMetadata={codeMeta} >
 </Layout>

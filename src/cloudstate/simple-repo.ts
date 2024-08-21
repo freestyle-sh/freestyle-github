@@ -7,6 +7,15 @@ export interface RepoMetadata {
     link: string;
 }
 
+export type CodebaseMetadata = {
+    [path: string]: {
+        isDir: boolean;
+        isFile: boolean;
+        lastestCommitMessage: string
+        lastestCommitDate: number;
+    };
+}
+
 @cloudstate
 export class SimpleRepo {
     static readonly id = "simple-repo";
@@ -23,6 +32,47 @@ export class SimpleRepo {
             name: this.name,
             description: this.description,
             link: this.link
+        }
+    }
+
+    getLatestCodebaseMetadata(path: string): CodebaseMetadata {
+        return {
+            "filename.ts": {
+                isDir: false,
+                isFile: true,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
+            "src": {
+                isDir: true,
+                isFile: false,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
+            "components": {
+                isDir: true,
+                isFile: false,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
+            "icons": {
+                isDir: true,
+                isFile: false,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
+            "layouts": {
+                isDir: true,
+                isFile: false,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
+            "package.json": {
+                isDir: false,
+                isFile: true,
+                lastestCommitMessage: "Initial commit",
+                lastestCommitDate: Date.now(),
+            },
         }
     }
 
