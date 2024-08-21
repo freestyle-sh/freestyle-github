@@ -2,6 +2,7 @@
 import { configure, InMemory } from '@zenfs/core';
 import git from "isomorphic-git";
 import {fs} from "@zenfs/core"
+import type { APIRoute } from 'astro';
 
 // import fs from "node:fs";
 
@@ -11,7 +12,8 @@ await configure({
     }
 });
 
-export async function GET({ params, request }) {
+
+export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     // return new Response(fs.readFileSync("/Users/jacobzwang/Documents/GitHub/freestyle-github/.git/info/refs").toString());
 
     await git.init({

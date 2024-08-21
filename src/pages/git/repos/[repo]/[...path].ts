@@ -1,7 +1,8 @@
 import fs from '@zenfs/core';
+import type { APIRoute } from 'astro';
 // import fs from "node:fs";
 
-export async function GET({ params, request }) {
+export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     let file;
     
     try {
