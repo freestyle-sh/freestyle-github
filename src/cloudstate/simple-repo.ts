@@ -1,4 +1,6 @@
+import fs from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
+import { createFS } from "./filesystem";
 
 export interface RepoMetadata {
   name: string;
@@ -19,14 +21,58 @@ export type CodebaseMetadata = {
 };
 
 export interface FileSystemMetadata {
-    [path: string]: FileMetadata;
+  [path: string]: FileMetadata;
 }
 
 export type FileType = "dir" | "file";
+
 export interface FileMetadata {
   fileType: FileType;
   lastestCommitMessage: string;
   lastestCommitDate: number;
+}
+
+@cloudstate
+export class Repository {
+  owner: string;
+  name: string;
+  repoId: string;
+  rawData: Blob;
+
+  constructor(owner: string, name: string, data: Blob) {
+    this.owner = owner;
+    this.name = name;
+    this.repoId = `${owner}/${name}`;
+    this.rawData = data;
+  }
+
+  mount() {
+    const FS = createFS();
+    return fs.mount(this.repoId, FS);
+  }
+
+  unmount() {
+    fs.umount(this.repoId);
+  }
+
+  [Symbol.dispose]() {
+    this.unmount();
+  }
+}
+
+@cloudstate
+export class RepoIndex {
+  static readonly id = "repo-index";
+
+  repos: Map<string, Repository> = new Map();
+
+  addRepo(repo: Repository) {
+    this.repos.set(repo.repoId, repo);
+  }
+
+  getRepo(name: string) {
+    return this.repos.get(name);
+  }
 }
 
 @cloudstate
@@ -94,5 +140,4 @@ export class SimpleRepo {
       },
     };
   }
-
 }
