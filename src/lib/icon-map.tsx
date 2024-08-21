@@ -84,7 +84,7 @@ export const FileIcon = (
         path: string;
     }},
 ) => {
-    if (props.metadata.isDir) {
+    if (props.metadata.fileType === "dir") {
         return <FolderIcon />;
     }
     if (getIconForFile(props.metadata.path)) {
@@ -92,5 +92,6 @@ export const FileIcon = (
             <i className={getIconForFile(props.metadata.path) + " colored block mr-2"} />
         );
     }
+    return <></>
 
 };

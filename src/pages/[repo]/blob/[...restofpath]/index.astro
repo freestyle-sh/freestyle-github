@@ -2,17 +2,36 @@
 import Layout from "../../../../layouts/Layout.astro";
 import { SimpleRepo } from "../../../../cloudstate/simple-repo";
 import { useCloud } from "freestyle-sh";
+import { FileIcon } from "../../../../lib/icon-map";
 
-const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo")
-const latest = simpleRepo.getLatestCodebaseMetadata();
+const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
+const latest = await simpleRepo.getLatestCodebaseMetadata();
 ---
+
 <Layout title="Blobalia">
-    <div class="grid grid-cols-[1fr,3fr] w-full h-screen">
-        <div class=" border-r border-slate-800 h-full">
-            
-        </div>
-        <div>
-            asfasf
-        </div>
+  <div class="grid grid-cols-[1fr,3fr] w-full h-screen">
+    <div class="border-r border-slate-800 h-full p-4 flex flex-col">
+      {
+        Object.entries(latest.files).map(([key, fileMeta]) => {
+          return (
+            <>
+              {
+                fileMeta.fileType === "file"?
+                <a
+                  class=" hover:bg-white/10 rounded-lg px-2 py-1 transition-all flex flex-row items-center focus:bg-white/20"
+                  href="#"
+                >
+                  <FileIcon metadata={{ ...fileMeta, path: key }} />
+
+                  <span>{key}</span>
+                </a>
+                : 
+              }
+            </>
+          );
+        })
+      }
     </div>
+    <div>asfasf</div>
+  </div>
 </Layout>
