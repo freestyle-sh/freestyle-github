@@ -16,27 +16,27 @@ export async function GET({ params, request }) {
 
     await git.init({
         fs,
-        dir: "/",
+        dir: `/${params.repo}`,
     });
 
     await git.branch({
         fs,
-        dir: "/",
+        dir: `/${params.repo}`,
         ref: "main",
         checkout: true,
     });
 
-    fs.writeFileSync("/test.txt", "test");
+    fs.writeFileSync( `/${params.repo}` + "/test.txt", "test");
 
     await git.add({
         fs,
-        dir: "/",
+        dir: `/${params.repo}`,
         filepath: "test.txt",
     });
 
     await git.commit({
         fs,
-        dir: "/",
+        dir: `/${params.repo}`,
         message: "first commit",
         author: {
             name: "Jacob Zwang",
@@ -46,15 +46,15 @@ export async function GET({ params, request }) {
 
     console.log(await git.listFiles({
         fs,
-        dir: "/",
+        dir: `/${params.repo}`,
         ref: "main",
     }));
 
-    const heads = fs.readdirSync("/.git/refs/heads");
+    const heads = fs.readdirSync(`${params.repo}/.git/refs/heads`);
 
     let refs = "";
     for (const head of heads) {
-        refs += fs.readFileSync(`/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
+        refs += fs.readFileSync(`${params.repo}/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
     }
 
     console.log(refs);
