@@ -1,7 +1,8 @@
 import type { RepoMetadata } from "../cloudstate/simple-repo";
 import Button from "./Button";
 import CountIndicator from "./CountIndicator";
-import { IconRepoForked, IconStar } from "./Icons";
+import IconRepoForked from "./icons/Fork";
+import IconStar from "./icons/Star";
 
 export const RepoBar = (props: { repoMetadata: RepoMetadata }) => {
   const { repoMetadata } = props;
@@ -12,12 +13,12 @@ export const RepoBar = (props: { repoMetadata: RepoMetadata }) => {
           {repoMetadata.name}
         </h1>
         <div className="flex flex-row space-x-2">
-          <Button style="secondary">
+          <Button style="secondary" spacing="compact">
             <IconRepoForked />
             Fork
             <CountIndicator count={repoMetadata.forkCount} />
           </Button>
-          <Button style="secondary">
+          <Button style="secondary" spacing="compact">
             <IconStar isStarred={false} />
             Star
             <CountIndicator count={repoMetadata.starCount} />

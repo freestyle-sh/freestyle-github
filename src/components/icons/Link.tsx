@@ -1,6 +1,4 @@
-import React from "react";
-
-export const LinkIcon = (props: { className?: string }) => {
+export const IconLink = (props: { className?: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
