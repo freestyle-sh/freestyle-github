@@ -6,7 +6,7 @@ export const RepoBar = (props: {
 }) => {
     const { repoMetadata } = props;
     return (
-        <div className="px-8 py-4">
+        <div className="px-8 pt-4">
             <div className="flex flex-row justify-between">
                 <h1 className="dark:text-white text-xl font-semibold">
                     {repoMetadata.name}
@@ -20,6 +20,8 @@ export const RepoBar = (props: {
                     </button>
                 </div>
             </div>
+            <div className="mt-4 h-[0.5px] w-full bg-slate-700" />
+
         </div>
     );
 };
