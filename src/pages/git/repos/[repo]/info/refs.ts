@@ -59,6 +59,8 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
         refs += fs.readFileSync(`${params.repo}/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
     }
 
+    refs += "\n";
+
     console.log(refs);
 
     return new Response(refs);
