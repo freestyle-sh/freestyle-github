@@ -2,12 +2,12 @@
 import Layout from "../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
 import { SimpleRepo } from "../cloudstate/simple-repo";
-import Repo from "../layouts/Repo.astro";
+import {RepoLayout} from "../layouts/Repo.tsx";
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo")
 
 const repoInfo = await simpleRepo.getInfo()
 ---
 
 <Layout title="Freestyle.sh Project">
-  <Repo  repoMetadata={repoInfo} >
+  <RepoLayout client:load repoMetadata={repoInfo} >
 </Layout>
