@@ -1,20 +1,40 @@
 // import {InMemoryStore, StoreFS} from '@zenfs/core';
-import { configure, InMemory } from '@zenfs/core';
+import { configure, InMemory, InMemoryStore, StoreFS } from '@zenfs/core';
 import git from "isomorphic-git";
 import {fs} from "@zenfs/core"
-import type { APIRoute } from 'astro';
+import { useCloud } from 'freestyle-sh';
+import { Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
+import { CloudStore } from '../../../../../cloudstate/filesystem';
 
-await configure({
-    mounts: {
-        "/": InMemory
-    }
-});
+// import fs from "node:fs";
 
-export async function GET({ params, request }: Parameters<APIRoute>[0]) {
+// await configure({
+//     mounts: {
+//         "/": InMemory
+//     }
+// });
+
+export async function GET({ params, request }) {
+    const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
+        owner: "JacobZwang",
+        name: params.repo,
+    });
+
+    console.log("got repo id", id);
+
+    const map = new InMemoryStore();
+    const store = new StoreFS(map);
+    store.checkRootSync();
+    fs.mount(`/${params.repo}`, store);
+
+    console.log("mounted");
+    
     await git.init({
         fs,
         dir: `/${params.repo}`,
     });
+
+    console.log("initialized");
 
     await git.branch({
         fs,
@@ -41,6 +61,18 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
         },
     });
 
+    console.log("committed");
+
+    const json = JSON.stringify(Array.from(map.entries()).map(([key, value]) => [key.toString(), Array.from(value)]));
+
+    // console.log(json);
+
+    await useCloud<typeof Repository>(id).setData({
+        data: json,
+    });
+
+    console.log("set data");
+
     fs.readdirSync(`${params.repo}/.git/objects/`).forEach(file => {
         fs.readdirSync(`${params.repo}/.git/objects/${file}`).forEach(file2 => {
             console.log(file2);
@@ -55,6 +87,10 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     }
 
     refs += "\n";
+
+    fs.umount(`/${params.repo}`);
+
+    console.log("umounted");
 
     return new Response(refs);
 }

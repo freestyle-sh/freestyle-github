@@ -57,10 +57,14 @@ export class CloudStoreTransaction extends Transaction<CloudStore> {
   }
 }
 
-@cloudstate
+
 export class CloudStore implements Store {
   name = "CloudStore";
   data = new Map<Ino, Uint8Array>();
+
+  constructor(data?: Map<Ino, Uint8Array>) {
+    this.data = data ?? new Map<Ino, Uint8Array>();
+  }
 
   async sync(): Promise<void> {}
 

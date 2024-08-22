@@ -1,4 +1,4 @@
-import fs, { type StoreFS } from "@zenfs/core";
+import fs, { type Ino, type StoreFS } from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
 import { type CloudStore, createFS } from "./filesystem";
 
@@ -44,26 +44,23 @@ export class Repository {
   readonly id: string;
   owner: string;
   name: string;
-  store: StoreFS<CloudStore>;
+  data: Blob;
 
-  constructor(owner: string, name: string, store: StoreFS<CloudStore>) {
-    this.id = `${owner}/${name}`;
+  constructor({owner, name, data}: { owner: string, name: string, data: Blob }) {
+    this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
-    this.store = store;
+    this.data = data
   }
 
-  mount() {
-    const FS = createFS();
-    return fs.mount(this.id, FS);
+  setData({data}: { data: string }) {
+    console.log("setting data");
+    this.data = new Blob([data]);
   }
 
-  unmount() {
-    fs.umount(this.id);
-  }
-
-  [Symbol.dispose]() {
-    this.unmount();
+  async getData() {
+    console.log("getting data");
+    return { data: await this.data.text() };
   }
 }
 
@@ -74,13 +71,18 @@ export class RepoIndex {
   repos: Map<string, Repository> = new Map();
 
   getOrCreateRepo(repo: { owner: string; name: string }) {
-    const repoId = `${repo.owner}/${repo.name}`;
-    const existingRepo = this.repos.get(repoId);
+    const existingRepo = Array.from(this.repos.values())
+      .find((repo) => repo.name === repo.name && repo.owner === repo.owner);
+
     if (existingRepo) {
       return existingRepo.id;
     }
-    const newRepo = new Repository(repo.owner, repo.name, createFS());
-    this.repos.set(repoId, newRepo);
+    const newRepo = new Repository({
+      owner: repo.owner,
+      name: repo.name,
+      data: new Blob(),
+    });
+    this.repos.set(newRepo.id, newRepo);
     return newRepo.id;
   }
 }
