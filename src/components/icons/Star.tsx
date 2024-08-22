@@ -1,8 +1,8 @@
 export type IconStarProps = {
-  isStarred: boolean;
+  starred: boolean;
 };
 export default function IconStar(props: IconStarProps) {
-  if (props.isStarred) {
+  if (props.starred) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"

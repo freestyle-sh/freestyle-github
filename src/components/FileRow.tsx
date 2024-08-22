@@ -23,7 +23,7 @@ export const FileRow = (props: {
     >
       <div className="text-gray-400 w-full flex items-center overflow-hidden shrink-0 gap-2">
         {file.fileType === "dir" ? (
-          <IconFileDirectory isFilled />
+          <IconFileDirectory filled />
         ) : (
           <IconFile />
         )}

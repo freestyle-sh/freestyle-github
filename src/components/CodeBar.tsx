@@ -10,7 +10,7 @@ export const CodeBar = () => {
   return (
     <div className="flex flex-row justify-between gap-4">
       <div className="flex flex-row space-x-2">
-        <Button isDropdown>
+        <Button dropdown>
           <IconGitBranch />
           main
         </Button>
@@ -25,7 +25,7 @@ export const CodeBar = () => {
           value={fileQuery}
           onChange={(e) => setFileQuery(e.target.value)}
         />
-        <Button style="primary" isDropdown>
+        <Button style="primary" dropdown>
           <IconCode />
           Code
         </Button>

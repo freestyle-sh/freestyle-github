@@ -19,7 +19,7 @@ export const RepoBar = (props: { repoMetadata: RepoMetadata }) => {
             <CountIndicator count={repoMetadata.forkCount} />
           </Button>
           <Button style="secondary" spacing="compact">
-            <IconStar isStarred={false} />
+            <IconStar starred={false} />
             Star
             <CountIndicator count={repoMetadata.starCount} />
           </Button>
