@@ -15,17 +15,28 @@ export const FileSystemViewer = (props: {
         {props.children}
       </div>
 
-      {fsEntries.length
-        ? fsEntries.map(([path, file]) => (
-          <FileRow key={path} fileMetadata={{ ...file, path }} />
-        ))
-        : (
-          <div>
-            <div className="text-gray-400 px-4 py-3.5 text-center">
-              No files found
-            </div>
+      {fsEntries.length ? (
+        fsEntries
+          .toSorted((a, b) => {
+            // Directories first
+            if (a[1].fileType === "dir" && b[1].fileType !== "dir") {
+              return -1;
+            } else if (a[1].fileType !== "dir" && b[1].fileType === "dir") {
+              return 1;
+            }
+            // Then sort by path
+            return a[0].localeCompare(b[0]);
+          })
+          .map(([path, file]) => (
+            <FileRow key={path} fileMetadata={{ ...file, path }} />
+          ))
+      ) : (
+        <div>
+          <div className="text-gray-400 px-4 py-3.5 text-center">
+            No files found
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
