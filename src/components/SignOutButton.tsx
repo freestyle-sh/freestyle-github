@@ -1,10 +1,11 @@
 import { useCloud } from "freestyle-sh";
 import type { AuthCS } from "../cloudstate/auth";
+import Button from "./Button";
 
 export const SignOutButton = () => {
     return (
-        <button
-            className="bg-red-500 text-white py-2 px-4 rounded-lg"
+        <Button
+            style="secondary"
             onClick={
                 async () => {
                     // delete cookie
@@ -14,6 +15,6 @@ export const SignOutButton = () => {
             }}
         >
             Sign Out
-        </button>
+        </Button>
     );
 };
