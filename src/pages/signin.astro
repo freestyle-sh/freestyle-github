@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { SignInForm } from "../components/SignInForm";
+import { configureFreestyle, useCloud } from "freestyle-sh";
+import { AuthCS } from "../cloudstate/auth";
+
+configureFreestyle({
+  createHeaders: () => Astro.request.headers,
+});
+const auth = useCloud<typeof AuthCS>("auth");
+if (await auth.getCurrentUser()) {
+  return Astro.redirect("/");
+} else {
+  console.log("no user");
+}
+---
+
+<Layout title="Sign In">
+  <SignInForm client:load />
+</Layout>

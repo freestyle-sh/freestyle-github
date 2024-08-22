@@ -15,10 +15,10 @@ import type { APIRoute } from 'astro';
 //     }
 // });
 
-export async function GET({ params, request }) {
+export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
         owner: "JacobZwang",
-        name: params.repo,
+        name: params.repo!,
     }).catch(() => ({
         id: undefined,
     }));
