@@ -1,6 +1,4 @@
-import fs, { type Ino, type StoreFS } from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
-import { type CloudStore, createFS } from "./filesystem";
 
 export interface RepoMetadata {
   name: string;
@@ -75,37 +73,34 @@ export class RepoIndex {
 
   repos: Map<string, Repository> = new Map();
 
-  getOrCreateRepo(repo: { owner: string; name: string }) {
+  createRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values())
-      .find((repo) => repo.name === repo.name && repo.owner === repo.owner);
+      .find((r) => r.name === repo.name && r.owner === repo.owner);
+
+      console.log("existing repo", existingRepo);
 
     if (existingRepo) {
-      throw new Error("Repo already exists");
+     throw new Error("Repo already exists");
     }
+
     const newRepo = new Repository({
       owner: repo.owner,
       name: repo.name,
       data: new Blob(),
     });
     this.repos.set(newRepo.id, newRepo);
-    return newRepo.id;
-    
+    return { id: newRepo.id };
   }
 
-  getOrCreateRepo(repo: { owner: string; name: string }) {
+  getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values())
-      .find((repo) => repo.name === repo.name && repo.owner === repo.owner);
+      .find((r) => r.name === repo.name && r.owner === repo.owner);
 
-    if (existingRepo) {
-      return existingRepo.id;
-    }
-    const newRepo = new Repository({
-      owner: repo.owner,
-      name: repo.name,
-      data: new Blob(),
-    });
-    this.repos.set(newRepo.id, newRepo);
-    return newRepo.id;
+      if (!existingRepo) {
+        throw new Error("Repo does not exist");
+      }
+   
+      return {id: existingRepo.id};
   }
 }
 

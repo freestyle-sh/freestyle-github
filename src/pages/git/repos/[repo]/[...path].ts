@@ -5,7 +5,7 @@ import { RepoIndex, Repository } from "../../../../cloudstate/simple-repo";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     console.log("getting file");
-    const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
+    const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
         owner: "JacobZwang",
         name: params.repo!,
     });
