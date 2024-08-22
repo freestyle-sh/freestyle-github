@@ -7,6 +7,7 @@ export interface RepoMetadata {
   link?: string;
   starCount: number;
   forkCount: number;
+  owner: string;
 }
 
 export type CodebaseMetadata = {
@@ -87,6 +88,7 @@ export class Repository {
   metadata(): RepoMetadata {
     return {
       id: this.id,
+      owner: this.owner,
       name: this.name,
       description: this.description,
       link: this.link,
@@ -102,6 +104,10 @@ export class RepoIndex {
 
   repos: Map<string, Repository> = new Map();
   repoByOwnerName: Map<string, string> = new Map();
+
+  listRepos() {
+    return Array.from(this.repos.values()).map((r) => r.metadata());
+  }
 
   createRepo(repo: { owner: string; name: string; description?: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
@@ -130,11 +136,13 @@ export class RepoIndex {
     const ownerName = `${repoLocation.owner}/${repoLocation.name}`;
     const repoId = this.repoByOwnerName.get(ownerName);
     if (!repoId) {
-      throw new Error("Repo does not exist in index");
+      console.log("repo does not exist on index", ownerName);
+      return;
     }
     const repo = this.repos.get(repoId!);
     if (!repo) {
-      throw new Error("Repo does not exist");
+      console.log("repo does not exist on index", repoId);
+      return;
     }
     return repo.metadata();
 

@@ -1,19 +1,33 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
-import { SimpleRepo } from "../cloudstate/simple-repo";
+import { RepoIndex, SimpleRepo } from "../cloudstate/simple-repo";
 import { RepoLayout } from "../layouts/Repo.tsx";
-const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
+import type { AuthCS } from "../cloudstate/auth";
+import { SignOutButton } from "../components/SignOutButton";
 
-const repoInfo = await simpleRepo.getInfo();
-const codeMeta = await simpleRepo.getLatestCodebaseMetadata();
+const auth = useCloud<typeof AuthCS>("auth");
+
+const repoIndex = useCloud<typeof RepoIndex>("repo-index");
+const repos = await repoIndex.listRepos();
+
+const usr = await auth.getUserInfo().catch(() => null);
+if (!usr) {
+  return Astro.redirect("/signin");
+}
+
+
 ---
 
 <Layout title="Home">
+  <p>{usr.username}</p>
   <p
-    class="p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center"
+    class="p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center flex flex-col items-center"
   >
-    This page is no longer a repo page, it is now a Freestyle x Fortress page
-    (an ad you might say)
+    {repos.map((repo) => (
+      <a href={`/${repo.owner}/${repo.name}`} class="p-2 w-full hover:bg-white/10 transition-all rounded-lg">{repo.name}</a>
+    ))}
   </p>
+
+  <SignOutButton client:load />
 </Layout>

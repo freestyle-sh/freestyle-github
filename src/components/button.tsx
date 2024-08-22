@@ -5,7 +5,7 @@ export type ButtonStyle = "primary" | "secondary" | "icon";
 export type ButtonSpacing = "compact" | "normal";
 
 export type ButtonProps = {
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   disabled?: boolean;
   style?: ButtonStyle;
   spacing?: ButtonSpacing;

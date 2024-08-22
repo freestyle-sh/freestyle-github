@@ -1,0 +1,12 @@
+---
+
+
+
+return new Response("", {
+  status: 302,
+  headers: {
+    Location: "/signin",
+    'Set-Cookie': `freestyle-session-id=; expires=${new Date(0).toUTCString()}; path=/`,
+  },
+});
+---

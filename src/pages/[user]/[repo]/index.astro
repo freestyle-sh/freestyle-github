@@ -1,8 +1,13 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { useCloud } from "freestyle-sh";
+import { configureFreestyle, useCloud } from "freestyle-sh";
 import { RepoIndex, SimpleRepo } from "../../../cloudstate/simple-repo";
 import { RepoLayout } from "../../../layouts/Repo";
+
+configureFreestyle({
+  createHeaders: () => Astro.request.headers,
+});
+
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 
 const repoIndex = useCloud<typeof RepoIndex>("repo-index");
@@ -11,6 +16,9 @@ const repoInfo = await repoIndex.getRepoMetadata({
   owner: Astro.params.user!,
   name: Astro.params.repo!,
 });
+if (!repoInfo) {
+  return Astro.redirect("/create");
+}
 
 // const repoInfo = await simpleRepo.getInfo();
 const codeMeta = await simpleRepo.getLatestCodebaseMetadata();

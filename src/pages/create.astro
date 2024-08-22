@@ -3,6 +3,12 @@ import Layout from "../layouts/Layout.astro";
 import Input from "../components/Input";
 import IconGitBranch from "../components/icons/GitBranch";
 import { CreateRepo } from "../components/Create";
+import { configureFreestyle } from "freestyle-sh";
+
+
+configureFreestyle({
+  createHeaders: () => Astro.request.headers,
+});
 ---
 
 <Layout title="Create Repo">
