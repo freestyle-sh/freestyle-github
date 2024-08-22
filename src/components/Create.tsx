@@ -16,10 +16,10 @@ export const CreateRepo = () => {
                     if (repoName !== "" && repoDescription !== "") {
                         await useCloud<typeof RepoIndex>("repo-index").createRepo({
                             name: repoName,
-                            owner: "me",//TODO: HOOK IN KEVIN AUTH AND NOT PASS FROM FRONTEND
+                            owner: "JacobZwang",//TODO: HOOK IN KEVIN AUTH AND NOT PASS FROM FRONTEND
                             description: repoDescription,
                         }).then((repoId) => {
-                            window.location.href = `/${repoId}`;
+                            window.location.href = `/JacobZwang/${repoName}`;
                         });
                     }
 

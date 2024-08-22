@@ -15,10 +15,19 @@ import { CloudStore } from '../../../../../cloudstate/filesystem';
 // });
 
 export async function GET({ params, request }) {
-    const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
+    const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
         owner: "JacobZwang",
         name: params.repo,
-    });
+    }).catch(() => ({
+        id: undefined,
+    }));
+
+    if (!id) {
+        return new Response("Repo does not exist", {
+            status: 404,
+        });
+    }
+    
 
     console.log("got repo id", id);
 
