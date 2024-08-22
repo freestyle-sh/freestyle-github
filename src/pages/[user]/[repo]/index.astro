@@ -1,16 +1,29 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
-import { SimpleRepo } from "../../../cloudstate/simple-repo";
+import { RepoIndex, Repository } from "../../../cloudstate/simple-repo";
 import { RepoLayout } from "../../../layouts/Repo";
-const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
-  
 
-const repoInfo = await simpleRepo.getInfo();
+const index = useCloud<typeof RepoIndex>("repo-index");
+
+const repoInfo = await index
+  .getRepo({
+    owner: Astro.params.user!,
+    name: Astro.params.repo!,
+  })
+  .catch(() => undefined);
+
+if (!repoInfo) {
+  return new Response("Repo does not exist", {
+    status: 404,
+  });
+}
+
+const simpleRepo = useCloud<typeof Repository>(repoInfo.id);
+
 const codeMeta = await simpleRepo.getLatestCodebaseMetadata();
 ---
 
 <Layout title="Freestyle.sh Project">
   <RepoLayout client:load repoMetadata={repoInfo} codeMetadata={codeMeta} />
-  
 </Layout>

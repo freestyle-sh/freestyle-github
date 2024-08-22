@@ -37,42 +37,6 @@ export async function GET({ params, request }) {
     store.checkRootSync();
     fs.mount(`/${params.repo}`, store);
 
-    console.log("mounted");
-    
-    await git.init({
-        fs,
-        dir: `/${params.repo}`,
-    });
-
-    console.log("initialized");
-
-    await git.branch({
-        fs,
-        dir: `/${params.repo}`,
-        ref: "main",
-        checkout: true,
-    });
-
-    fs.writeFileSync( `/${params.repo}` + "/test.txt", "test");
-
-    await git.add({
-        fs,
-        dir: `/${params.repo}`,
-        filepath: "test.txt",
-    });
-
-    await git.commit({
-        fs,
-        dir: `/${params.repo}`,
-        message: "first commit",
-        author: {
-            name: "Jacob Zwang",
-            email: "59858341+JacobZwang@users.noreply.github.com",
-        },
-    });
-
-    console.log("committed");
-
     const json = JSON.stringify(Array.from(map.entries()).map(([key, value]) => [key.toString(), Array.from(value)]));
 
     // console.log(json);
@@ -83,22 +47,22 @@ export async function GET({ params, request }) {
 
     console.log("set data");
 
-    fs.readdirSync(`${params.repo}/.git/objects/`).forEach(file => {
-        fs.readdirSync(`${params.repo}/.git/objects/${file}`).forEach(file2 => {
+    fs.readdirSync(`${id}/.git/objects/`).forEach(file => {
+        fs.readdirSync(`${id}/.git/objects/${file}`).forEach(file2 => {
             console.log(file2);
         });
     });
 
-    const heads = fs.readdirSync(`${params.repo}/.git/refs/heads`);
+    const heads = fs.readdirSync(`${id}/.git/refs/heads`);
 
     let refs = "";
     for (const head of heads) {
-        refs += fs.readFileSync(`${params.repo}/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
+        refs += fs.readFileSync(`${id}/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
     }
 
     refs += "\n";
 
-    fs.umount(`/${params.repo}`);
+    fs.umount(`/${id}`);
 
     console.log("umounted");
 
