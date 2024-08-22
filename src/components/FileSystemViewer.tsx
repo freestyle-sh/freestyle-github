@@ -9,7 +9,7 @@ export const FileSystemViewer = (props: {
 }) => {
   const { fileSystemMetadata } = props;
   return (
-    <div className="text-sm rounded-lg border border-[#30363d] w-100 overflow-ellipsis">
+    <div className="text-sm rounded-lg border border-[#30363d] w-100 overflow-ellipsis overflow-hidden">
       <div className="bg-[#161b22] px-4 py-3.5 border-b border-gray-700 flex flex-row justify-between items-center">
         {props.children}
       </div>

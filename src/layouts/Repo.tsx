@@ -16,13 +16,13 @@ export function RepoLayout(props: {
   return (
     <div className="w-full flex flex-col">
       <RepoBar repoMetadata={repoMetadata} />
-      <div className="grid grid-cols-[2fr,1fr] w-full h-full px-12 py-4">
-        <div className="pr-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[2fr,1fr] w-full h-full px-6 sm:px-12 py-4">
+        <div className="mb-8 sm:mb-0 sm:pr-4">
           <CodeBar />
           <div className="mt-4" />
           <CodebaseViewer codeMetadata={codeMetadata} />
         </div>
-        <div className="pl-4">
+        <div className="sm:pl-4">
           <RepoSidebar repoMetadata={repoMetadata} />
         </div>
       </div>

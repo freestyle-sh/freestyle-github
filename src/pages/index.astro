@@ -6,7 +6,7 @@ import { RepoLayout } from "../layouts/Repo.tsx";
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 
 const repoInfo = await simpleRepo.getInfo();
-const codeMeta = await simpleRepo.getLatestCodebaseMetadata("./");
+const codeMeta = await simpleRepo.getLatestCodebaseMetadata();
 ---
 
 <Layout title="Home">

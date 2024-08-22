@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Input from "../components/Input";
+import IconGitBranch from "../components/icons/GitBranch";
+import { CreateRepo } from "../components/Create";
+---
+
+<Layout title="Create Repo">
+  <CreateRepo client:load/>
+</Layout>

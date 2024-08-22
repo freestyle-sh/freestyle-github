@@ -6,6 +6,7 @@ export type ButtonSpacing = "compact" | "normal";
 
 export type ButtonProps = {
   onClick?: () => void;
+  type?: "button" | "submit";
   style?: ButtonStyle;
   spacing?: ButtonSpacing;
   isDropdown?: boolean;
@@ -16,12 +17,14 @@ export default function Button({
   onClick,
   style = "secondary",
   spacing = "normal",
+  type="button",
   isDropdown = false,
   children,
 }: ButtonProps) {
   return (
     <button
       onClick={onClick}
+      type={type ?? "button"}
       className={`${
         style === "primary"
           ? "bg-[#1f883d] hover:bg-[#358e4e] text-white"
@@ -32,7 +35,7 @@ export default function Button({
         spacing === "compact"
           ? "py-1 px-4 text-xs font-medium gap-2"
           : "py-2 px-4 text-sm font-medium gap-2"
-      } rounded-lg flex flex-row items-center justify-center transition duration-75 ${isDropdown ? "pr-3" : ""}`}
+      } rounded-lg flex flex-row items-center justify-center transition duration-75 ${isDropdown ? "pr-3" : ""}  `}
     >
       {children}
       {isDropdown && <IconTriangleDown />}

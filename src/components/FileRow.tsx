@@ -17,6 +17,7 @@ export const FileRow = (props: {
   return (
     <div
       key={path}
+      
       className={
         "text-sm px-4 py-3 border-b border-gray-700 last:border-0 grid grid-cols-[1fr,auto] md:grid-cols-[1fr,1fr,auto] gap-10 hover:bg-[#151b23]"
       }

@@ -1,8 +1,8 @@
 ---
-import Layout from "../../../../layouts/Layout.astro";
-import { SimpleRepo } from "../../../../cloudstate/simple-repo";
+import Layout from "../../../../../layouts/Layout.astro";
+import { SimpleRepo } from "../../../../../cloudstate/simple-repo";
 import { useCloud } from "freestyle-sh";
-import { FileIcon } from "../../../../lib/icon-map";
+import { FileIcon } from "../../../../../lib/icon-map";
 
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 const latest = await simpleRepo.getLatestCodebaseMetadata();
