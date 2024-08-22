@@ -4,18 +4,13 @@ import git from "isomorphic-git";
 import {fs} from "@zenfs/core"
 import type { APIRoute } from 'astro';
 
-// import fs from "node:fs";
-
 await configure({
     mounts: {
         "/": InMemory
     }
 });
 
-
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
-    // return new Response(fs.readFileSync("/Users/jacobzwang/Documents/GitHub/freestyle-github/.git/info/refs").toString());
-
     await git.init({
         fs,
         dir: `/${params.repo}`,
@@ -46,11 +41,11 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
         },
     });
 
-    console.log(await git.listFiles({
-        fs,
-        dir: `/${params.repo}`,
-        ref: "main",
-    }));
+    fs.readdirSync(`${params.repo}/.git/objects/`).forEach(file => {
+        fs.readdirSync(`${params.repo}/.git/objects/${file}`).forEach(file2 => {
+            console.log(file2);
+        });
+    });
 
     const heads = fs.readdirSync(`${params.repo}/.git/refs/heads`);
 
@@ -60,8 +55,6 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     }
 
     refs += "\n";
-
-    console.log(refs);
 
     return new Response(refs);
 }
