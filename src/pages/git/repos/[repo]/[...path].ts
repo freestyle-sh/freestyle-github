@@ -10,7 +10,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     name: params.repo!,
   });
 
-  const data = await useCloud<typeof Repository>(id).getData();
+  const data = await useCloud<typeof Repository>(id.id).getData();
 
   const map = new Map<bigint, Uint8Array>(
     JSON.parse(await data.data).map(

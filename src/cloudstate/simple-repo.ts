@@ -50,7 +50,7 @@ export class Repository {
   name: string;
   data: Blob;
 
-  description: string = "";
+  description = "";
   link: string | undefined;
 
   constructor({
@@ -103,9 +103,19 @@ export class RepoIndex {
   repos: Map<string, Repository> = new Map();
   repoByOwnerName: Map<string, string> = new Map();
 
+  getOrCreateRepo(repo: { owner: string; name: string }) {
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
+    if (existingRepo) {
+      return { id: existingRepo.id };
+    }
+    return this.createRepo(repo);
+  }
+
   createRepo(repo: { owner: string; name: string; description?: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === repo.owner,
     );
 
     console.log("existing repo", existingRepo);
@@ -132,18 +142,16 @@ export class RepoIndex {
     if (!repoId) {
       throw new Error("Repo does not exist in index");
     }
-    const repo = this.repos.get(repoId!);
+    const repo = this.repos.get(repoId);
     if (!repo) {
       throw new Error("Repo does not exist");
     }
     return repo.metadata();
-
-
   }
 
   getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === repo.owner,
     );
 
     if (!existingRepo) {
