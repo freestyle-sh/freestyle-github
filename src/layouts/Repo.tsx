@@ -20,37 +20,6 @@ export function RepoLayout(props: {
         <div className="pr-4">
           <CodeBar />
           <div className="mt-4" />
-          <div className="text-sm rounded-lg border border-[#30363d] w-100 overflow-ellipsis">
-            <div className="bg-[#161b22] px-4 py-3.5 border-b border-gray-700 flex flex-row justify-between items-center">
-              <div className="flex flex-row gap-2.5 items-center">
-                <div className="flex flex-row gap-2 items-center">
-                  <div className="cursor-pointer">
-                    <Avatar
-                      src={codeMetadata.latestCommit.author.avatar}
-                      alt="kevgug"
-                    />
-                  </div>
-                  <div className="text-gray-100 font-bold hover:underline cursor-pointer">
-                    {codeMetadata.latestCommit.author.username}
-                  </div>
-                </div>
-                <div className="text-gray-400 hover:text-blue-500 hover:underline cursor-pointer">
-                  {codeMetadata.latestCommit.message}
-                </div>
-              </div>
-              <div className="text-gray-400 text-xs">
-                <span className="hover:text-blue-500 hover:underline cursor-pointer">
-                  {codeMetadata.latestCommit.shortHash}
-                </span>{" "}
-                • {format(codeMetadata.latestCommit.date)}
-              </div>
-            </div>
-            {Object.entries(codeMetadata.files).map(
-              ([path, file], index, all) => (
-                <FileRow key={path} fileMetadata={{ ...file, path }} />
-              )
-            )}
-          </div>
           <CodebaseViewer codeMetadata={codeMetadata} />
         </div>
         <div className="pl-4">
