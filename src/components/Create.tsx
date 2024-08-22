@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "./button";
+import Button from "./Button";
 import Input from "./Input";
 import { useCloud } from "freestyle-sh";
 import { RepoIndex } from "../cloudstate/simple-repo";
