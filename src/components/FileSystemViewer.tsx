@@ -8,14 +8,24 @@ export const FileSystemViewer = (props: {
   children: React.ReactNode;
 }) => {
   const { fileSystemMetadata } = props;
+  const fsEntries = Object.entries(fileSystemMetadata);
   return (
-    <div className="text-sm rounded-lg border border-[#30363d] w-100 overflow-ellipsis">
+    <div className="text-sm rounded-lg border border-[#30363d] w-100 overflow-ellipsis overflow-hidden">
       <div className="bg-[#161b22] px-4 py-3.5 border-b border-gray-700 flex flex-row justify-between items-center">
         {props.children}
       </div>
-      {Object.entries(fileSystemMetadata).map(([path, file]) => (
-        <FileRow key={path} fileMetadata={{ ...file, path }} />
-      ))}
+
+      {fsEntries.length
+        ? fsEntries.map(([path, file]) => (
+          <FileRow key={path} fileMetadata={{ ...file, path }} />
+        ))
+        : (
+          <div>
+            <div className="text-gray-400 px-4 py-3.5 text-center">
+              No files found
+            </div>
+          </div>
+        )}
     </div>
   );
 };

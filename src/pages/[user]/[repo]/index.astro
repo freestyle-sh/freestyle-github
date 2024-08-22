@@ -1,9 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import Layout from "../../../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
-import { SimpleRepo } from "../../cloudstate/simple-repo";
-import { RepoLayout } from "../../layouts/Repo.tsx";
+import { SimpleRepo } from "../../../cloudstate/simple-repo";
+import { RepoLayout } from "../../../layouts/Repo";
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
+  
 
 const repoInfo = await simpleRepo.getInfo();
 const codeMeta = await simpleRepo.getLatestCodebaseMetadata();
