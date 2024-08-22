@@ -53,8 +53,6 @@ export class Repository {
   name: string;
   description: string;
   data: Blob;
-
-  description = "";
   link: string | undefined;
 
   constructor({
@@ -136,7 +134,6 @@ export class RepoIndex {
     const newRepo = new Repository({
       owner: repo.owner,
       name: repo.name,
-      description: repo.description,
       data: new Blob(),
       description: repo.description,
       link: undefined,
@@ -195,6 +192,7 @@ export class SimpleRepo {
   getInfo(): RepoMetadata {
     return {
       id: "simple-repo",
+      owner: "kevgug",
       name: this.name,
       description: this.description,
       link: this.link,
