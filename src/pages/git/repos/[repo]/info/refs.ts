@@ -7,14 +7,6 @@ import { Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstat
 import { CloudStore } from '../../../../../cloudstate/filesystem';
 import type { APIRoute } from 'astro';
 
-// import fs from "node:fs";
-
-// await configure({
-//     mounts: {
-//         "/": InMemory
-//     }
-// });
-
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
         owner: "JacobZwang",

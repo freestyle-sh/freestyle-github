@@ -14,7 +14,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
 
     const map = new Map<bigint, Uint8Array>(
         JSON.parse(await data.data).map((
-            [key, value],
+            [key, value]: [string, any],
         ) => [BigInt(key), new Uint8Array(value)]),
     );
 
