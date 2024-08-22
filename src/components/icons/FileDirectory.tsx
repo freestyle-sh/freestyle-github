@@ -1,11 +1,11 @@
 export type IconFileDirectoryProps = {
-  isFilled?: boolean;
+  filled?: boolean;
 };
 
 export default function IconFileDirectory({
-  isFilled = false,
+  filled = false,
 }: IconFileDirectoryProps) {
-  if (isFilled) {
+  if (filled) {
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"

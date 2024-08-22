@@ -5,6 +5,7 @@ import {fs} from "@zenfs/core"
 import { useCloud } from 'freestyle-sh';
 import { Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
 import { CloudStore } from '../../../../../cloudstate/filesystem';
+import type { APIRoute } from 'astro';
 
 // import fs from "node:fs";
 

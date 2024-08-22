@@ -3,7 +3,7 @@ import { cloudstate } from "freestyle-sh";
 export interface RepoMetadata {
   name: string;
   description: string;
-  link: string;
+  link?: string;
   starCount: number;
   forkCount: number;
 }
@@ -116,7 +116,7 @@ export class SimpleRepo {
   starCount = 0;
   forkCount = 0;
 
-  getInfo() {
+  getInfo(): RepoMetadata {
     return {
       name: this.name,
       description: this.description,

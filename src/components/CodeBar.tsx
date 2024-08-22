@@ -1,5 +1,5 @@
 import React from "react";
-import Button from "./button";
+import Button from "./Button";
 import IconGitBranch from "./icons/GitBranch";
 import IconCode from "./icons/Code";
 import Input from "./Input";
@@ -10,7 +10,7 @@ export const CodeBar = () => {
   return (
     <div className="flex flex-row justify-between gap-4">
       <div className="flex flex-row space-x-2">
-        <Button isDropdown>
+        <Button dropdown>
           <IconGitBranch />
           main
         </Button>
@@ -29,7 +29,7 @@ export const CodeBar = () => {
           onChange={(e) => setFileQuery(e.target.value)}
         />
         </div>
-        <Button style="primary" isDropdown>
+        <Button style="primary" dropdown>
           <IconCode />
           Code
         </Button>
