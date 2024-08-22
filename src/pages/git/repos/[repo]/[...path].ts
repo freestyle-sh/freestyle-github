@@ -20,11 +20,15 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   try {
     file = fs.readFileSync(`${params.repo}/.git/${params.path}`);
   } catch (e) {
-    fs.umount(`/${params.repo}`);
+    // try {
+    //     fs.umount(`/${params.repo}`);
+    // } catch (e) {}
     return new Response(null, { status: 404 });
   }
 
-  fs.umount(`/${params.repo}`);
+//   try {
+//       fs.umount(`/${params.repo}`);
+//     } catch (e) {}
 
   return new Response(file);
 }

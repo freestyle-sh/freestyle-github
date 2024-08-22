@@ -3,7 +3,7 @@ import { configure, InMemory, InMemoryStore, StoreFS } from '@zenfs/core';
 import git from "isomorphic-git";
 import {fs} from "@zenfs/core"
 import { useCloud } from 'freestyle-sh';
-import { Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
+import { getOrMountRepo, Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
 import { CloudStore } from '../../../../../cloudstate/filesystem';
 import type { APIRoute } from 'astro';
 
@@ -32,20 +32,8 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
 
     console.log("got repo id", id);
 
-    const map = new InMemoryStore();
-    const store = new StoreFS(map);
-    store.checkRootSync();
-    fs.mount(`/${params.repo}`, store);
-
-    const json = JSON.stringify(Array.from(map.entries()).map(([key, value]) => [key.toString(), Array.from(value)]));
-
-    // console.log(json);
-
-    await useCloud<typeof Repository>(id).setData({
-        data: json,
-    });
-
-    console.log("set data");
+    const data = await useCloud<typeof Repository>(id).getData();
+    await getOrMountRepo(id, new Blob([data.data]));
 
     fs.readdirSync(`${id}/.git/objects/`).forEach(file => {
         fs.readdirSync(`${id}/.git/objects/${file}`).forEach(file2 => {
@@ -62,7 +50,9 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
 
     refs += "\n";
 
-    fs.umount(`/${id}`);
+    // try {
+    //     fs.umount(`/${id}`);
+    // } catch (e) {}
 
     console.log("umounted");
 

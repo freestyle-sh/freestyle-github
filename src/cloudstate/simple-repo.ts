@@ -124,7 +124,10 @@ export class Repository {
 export async function getOrMountRepo(id: string, data?: Blob) {
   const existingMount = Array.from(fs.mounts.entries()).find(([name, mount]) => name === `/${id}`);
   if (existingMount) {
-    fs.umount(`/${id}`);
+    try {
+
+      fs.umount(`/${id}`);
+    } catch (e) {}
   }
 
   // if (!existingMount) {
@@ -136,7 +139,9 @@ export async function getOrMountRepo(id: string, data?: Blob) {
       entries.forEach(([key, value]) => store.set(key, value));
     }
     const storefs = new StoreFS(store);
-    fs.mount(`/${id}`, storefs);
+    try {
+      fs.mount(`/${id}`, storefs);
+    } catch (e) {}
     storefs.checkRootSync();
     return store;
   // } else {
