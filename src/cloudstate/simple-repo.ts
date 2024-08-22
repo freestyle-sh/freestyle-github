@@ -1,4 +1,4 @@
-import fs, { type StoreFS } from "@zenfs/core";
+import fs, { type Ino, type StoreFS } from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
 import { type CloudStore, createFS } from "./filesystem";
 
@@ -49,51 +49,24 @@ export class Repository {
   readonly id: string;
   owner: string;
   name: string;
-  store: StoreFS<CloudStore>;
-  description: string;
-  link: string | undefined;
-  stars: string[] = [];
-  forks: string[] = [];
+  data: Blob;
 
-  constructor(owner: string, name: string, store: StoreFS<CloudStore>, options?:{
-    description?: string;
-    link?: string;
-  }) {
-    this.id = `${owner}/${name}`;
+  constructor({owner, name, data}: { owner: string, name: string, data: Blob }) {
+    this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
-    this.store = store;
-    this.description = options?.description || "";
-    this.link = options?.link;
-    this.stars = [];
-    this.forks = [];
-
+    this.data = data
   }
 
-  mount() {
-    const FS = createFS();
-    return fs.mount(this.id, FS);
+  setData({data}: { data: string }) {
+    console.log("setting data");
+    this.data = new Blob([data]);
   }
 
-  unmount() {
-    fs.umount(this.id);
+  async getData() {
+    console.log("getting data");
+    return { data: await this.data.text() };
   }
-
-  [Symbol.dispose]() {
-    this.unmount();
-  }
-
-  metadata(): RepoMetadata {
-    return {
-      name: this.name,
-      description: this.description,
-      link: this.link || "",
-      starCount: this.stars.length,
-      forkCount: this.forks.length,
-    };
-  }
-
-  
 }
 
 @cloudstate
@@ -102,28 +75,36 @@ export class RepoIndex {
 
   repos: Map<string, Repository> = new Map();
 
-  createRepo(repo: { owner: string; name: string, description: string }) {
-    const repoId = `${repo.owner}/${repo.name}`;
-    const existingRepo = this.repos.get(repoId);
+  getOrCreateRepo(repo: { owner: string; name: string }) {
+    const existingRepo = Array.from(this.repos.values())
+      .find((repo) => repo.name === repo.name && repo.owner === repo.owner);
+
     if (existingRepo) {
       throw new Error("Repo already exists");
     }
-    const newRepo = new Repository(repo.owner, repo.name, createFS(), {
-      description: repo.description,
+    const newRepo = new Repository({
+      owner: repo.owner,
+      name: repo.name,
+      data: new Blob(),
     });
-    this.repos.set(repoId, newRepo);
+    this.repos.set(newRepo.id, newRepo);
     return newRepo.id;
     
   }
 
   getOrCreateRepo(repo: { owner: string; name: string }) {
-    const repoId = `${repo.owner}/${repo.name}`;
-    const existingRepo = this.repos.get(repoId);
+    const existingRepo = Array.from(this.repos.values())
+      .find((repo) => repo.name === repo.name && repo.owner === repo.owner);
+
     if (existingRepo) {
       return existingRepo.id;
     }
-    const newRepo = new Repository(repo.owner, repo.name, createFS());
-    this.repos.set(repoId, newRepo);
+    const newRepo = new Repository({
+      owner: repo.owner,
+      name: repo.name,
+      data: new Blob(),
+    });
+    this.repos.set(newRepo.id, newRepo);
     return newRepo.id;
   }
 }
