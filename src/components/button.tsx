@@ -12,8 +12,8 @@ export type ButtonProps = {
   style?: ButtonStyle;
   spacing?: ButtonSpacing;
   dropdown?: boolean;
-  children: React.ReactNode;
   type?: "button" | "submit" | "reset";
+  children: React.ReactNode;
 };
 
 export default function Button({

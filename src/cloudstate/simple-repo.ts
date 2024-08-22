@@ -29,29 +29,30 @@ export interface FileSystemMetadata {
 }
 
 export type FileType = "dir" | "file";
-export type FileMetadata = {
-  fileType: FileType;
-  link: string;
-  lastestCommitMessage: string;
-  lastestCommitDate: number;
-} & (
-  | {
+export type FileMetadata =
+  & {
+    fileType: FileType;
+    link: string;
+    lastestCommitMessage: string;
+    lastestCommitDate: number;
+  }
+  & (
+    | {
       fileType: "dir";
       children: FileSystemMetadata;
     }
-  | {
+    | {
       fileType: "file";
     }
-);
+  );
 
 @cloudstate
 export class Repository {
   readonly id: string;
   owner: string;
   name: string;
+  description: string;
   data: Blob;
-
-  description = "";
   link: string | undefined;
 
   constructor({
@@ -108,10 +109,10 @@ export class RepoIndex {
   listRepos() {
     return Array.from(this.repos.values()).map((r) => r.metadata());
   }
-  
+
   getOrCreateRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === repo.owner,
     );
     if (existingRepo) {
       return { id: existingRepo.id };
@@ -121,7 +122,7 @@ export class RepoIndex {
 
   createRepo(repo: { owner: string; name: string; description?: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === repo.owner,
     );
 
     console.log("existing repo", existingRepo);
@@ -159,7 +160,7 @@ export class RepoIndex {
 
   getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === repo.owner,
     );
 
     if (!existingRepo) {
@@ -191,6 +192,7 @@ export class SimpleRepo {
   getInfo(): RepoMetadata {
     return {
       id: "simple-repo",
+      owner: "kevgug",
       name: this.name,
       description: this.description,
       link: this.link,

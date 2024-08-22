@@ -1,10 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Input from "../components/Input";
-import IconGitBranch from "../components/icons/GitBranch";
 import { CreateRepo } from "../components/Create";
-import { configureFreestyle } from "freestyle-sh";
+import generate from "boring-name-generator";
 
+const nameSuggestion = generate({ words: 3 }).dashed;
+import { configureFreestyle } from "freestyle-sh";
 
 configureFreestyle({
   createHeaders: () => Astro.request.headers,
@@ -12,5 +12,5 @@ configureFreestyle({
 ---
 
 <Layout title="Create Repo">
-  <CreateRepo client:load/>
+  <CreateRepo client:load nameInspo={nameSuggestion} />
 </Layout>

@@ -25,6 +25,7 @@
     "astro": "^4.6.1",
     "cookie": "^0.6.0",
     "emoji-blast": "^0.10.1",
+    "boring-name-generator": "^1.0.3",
     "freestyle-auth": "^0.1.0",
     "freestyle-deno-astro-adapter": "^5.0.4",
     "freestyle-sh": "^0.2.35",
