@@ -1,12 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Button from "./Button";
 import Input from "./Input";
-import { useCloud } from "freestyle-sh";
-import { RepoIndex } from "../cloudstate/simple-repo";
 
 export const CreateRepo = () => {
     const [repoName, setRepoName] = React.useState("");
     const [repoDescription, setRepoDescription] = React.useState("");
+
+    const [isFormValid, setIsFormValid] = React.useState(false);
+
+    useEffect(() => {
+        if (repoName !== "") {
+            setIsFormValid(true);
+        } else {
+            setIsFormValid(false);
+        }
+    }, [repoName]);
+
     return (
         <div className="py-8 px-4  flex flex-row justify-center items-center w-full">
             <form
@@ -55,7 +64,7 @@ export const CreateRepo = () => {
                 </label>
 
                 <br />
-                <Button style="primary" type="submit">Create Repository</Button>
+                <Button style="primary" type="submit" disabled={!isFormValid}>Create Repository</Button>
             </form>
         </div>
     );

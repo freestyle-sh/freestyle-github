@@ -10,6 +10,7 @@ export type ButtonProps = {
   style?: ButtonStyle;
   spacing?: ButtonSpacing;
   dropdown?: boolean;
+  type?: "button" | "submit" | "reset";
   children: React.ReactNode;
 };
 
@@ -19,6 +20,7 @@ export default function Button({
   style = "secondary",
   spacing = "normal",
   dropdown = false,
+  type,
   children,
 }: ButtonProps) {
   return (
@@ -36,6 +38,7 @@ export default function Button({
           ? "py-1 px-4 text-xs font-medium gap-2"
           : "py-1.5 px-4 text-sm font-medium gap-2"
       } ${dropdown ? "pr-3" : ""} rounded-lg flex flex-row items-center justify-center transition duration-75 disabled:cursor-default`}
+       type={type}
     >
       {children}
       {dropdown && <IconTriangleDown />}
