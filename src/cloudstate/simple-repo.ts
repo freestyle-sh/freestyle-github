@@ -1,6 +1,7 @@
 import { cloudstate } from "freestyle-sh";
 
 export interface RepoMetadata {
+  id: string;
   name: string;
   description: string;
   link?: string;
@@ -49,14 +50,31 @@ export class Repository {
   name: string;
   data: Blob;
 
-  constructor({owner, name, data}: { owner: string, name: string, data: Blob }) {
+  description: string = "";
+  link: string | undefined;
+
+  constructor({
+    owner,
+    name,
+    data,
+    description,
+    link,
+  }: {
+    owner: string;
+    name: string;
+    data: Blob;
+    description?: string;
+    link?: string;
+  }) {
     this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
-    this.data = data
+    this.data = data;
+    this.description = description ?? "";
+    this.link = link;
   }
 
-  setData({data}: { data: string }) {
+  setData({ data }: { data: string }) {
     console.log("setting data");
     this.data = new Blob([data]);
   }
@@ -65,6 +83,17 @@ export class Repository {
     console.log("getting data");
     return { data: await this.data.text() };
   }
+
+  metadata(): RepoMetadata {
+    return {
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      link: this.link,
+      starCount: 0,
+      forkCount: 0,
+    };
+  }
 }
 
 @cloudstate
@@ -72,35 +101,62 @@ export class RepoIndex {
   static readonly id = "repo-index";
 
   repos: Map<string, Repository> = new Map();
+  repoByOwnerName: Map<string, string> = new Map();
 
-  createRepo(repo: { owner: string; name: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+  createRepo(repo: { owner: string; name: string; description?: string }) {
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner
+    );
 
-      console.log("existing repo", existingRepo);
+    console.log("existing repo", existingRepo);
 
     if (existingRepo) {
-     throw new Error("Repo already exists");
+      throw new Error("Repo already exists");
     }
 
     const newRepo = new Repository({
       owner: repo.owner,
       name: repo.name,
       data: new Blob(),
+      description: repo.description,
+      link: undefined,
     });
     this.repos.set(newRepo.id, newRepo);
+    this.repoByOwnerName.set(`${repo.owner}/${repo.name}`, newRepo.id);
     return { id: newRepo.id };
   }
 
-  getRepo(repo: { owner: string; name: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+  getRepoMetadata(repoLocation: { owner: string; name: string }) {
+    const ownerName = `${repoLocation.owner}/${repoLocation.name}`;
+    const repoId = this.repoByOwnerName.get(ownerName);
+    if (!repoId) {
+      throw new Error("Repo does not exist in index");
+    }
+    const repo = this.repos.get(repoId!);
+    if (!repo) {
+      throw new Error("Repo does not exist");
+    }
+    return repo.metadata();
 
-      if (!existingRepo) {
-        throw new Error("Repo does not exist");
-      }
-   
-      return {id: existingRepo.id};
+
+  }
+
+  getRepo(repo: { owner: string; name: string }) {
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner
+    );
+
+    if (!existingRepo) {
+      throw new Error("Repo does not exist");
+    }
+
+    return {
+      id: existingRepo.id,
+      owner: existingRepo.owner,
+      name: existingRepo.name,
+      description: existingRepo.description,
+      link: existingRepo.link,
+    };
   }
 }
 
@@ -109,7 +165,7 @@ export class SimpleRepo {
   static readonly id = "simple-repo";
   name = "Simple-Repo".toLowerCase();
   description = "A simple repo that stores a simple codebase";
-  link: string | undefined= "https://www.freestyle.sh";
+  link: string | undefined = "https://www.freestyle.sh";
   codebase = {
     filename: "simple-repo.ts",
   };
@@ -118,6 +174,7 @@ export class SimpleRepo {
 
   getInfo(): RepoMetadata {
     return {
+      id: "simple-repo",
       name: this.name,
       description: this.description,
       link: this.link,
@@ -138,9 +195,7 @@ export class SimpleRepo {
         shortHash: "123456",
       },
       totalCommits: 1,
-      files: {
-        
-      }
+      files: {},
       // files: {
       //   "filename.ts": {
       //     fileType: "file",
