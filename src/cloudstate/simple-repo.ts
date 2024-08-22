@@ -12,6 +12,10 @@ export interface RepoMetadata {
 
 export type CodebaseMetadata = {
   latestCommit: {
+    author: {
+      username: string;
+      avatar: string;
+    };
     message: string;
     date: number;
     shortHash: string;
@@ -112,6 +116,10 @@ export class SimpleRepo {
   getLatestCodebaseMetadata(): CodebaseMetadata {
     return {
       latestCommit: {
+        author: {
+          username: "kevgug",
+          avatar: "https://avatars.githubusercontent.com/u/37193648?v=4",
+        },
         message: "Initial commit",
         date: Date.now(),
         shortHash: "123456",

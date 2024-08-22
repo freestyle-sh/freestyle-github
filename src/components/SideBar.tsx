@@ -15,7 +15,7 @@ export const RepoSidebar = (props: { repoMetadata: RepoMetadata }) => {
           href={repoMetadata.link}
           target="_blank"
           rel="noreferrer"
-          className="text-blue-600 hover:text-blue-400 transition-all font-semibold"
+          className="text-blue-500 hover:opacity-85 transition-all duration-75 font-semibold"
         >
           {new URL(repoMetadata.link).hostname +
             new URL(repoMetadata.link).pathname}

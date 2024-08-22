@@ -3,10 +3,9 @@ import { RepoBar } from "../components/RepoBar";
 import { RepoSidebar } from "../components/SideBar";
 import { CodeBar } from "../components/CodeBar";
 import { format } from "timeago.js";
-import { FileIcon, getIconForFile } from "../lib/icon-map";
 import { FileRow } from "../components/FileRow";
 import { CodebaseViewer } from "../components/CodebaseViewer";
-// const { ThemeProvider } = await import('@primer/react');
+import Avatar from "../components/Avatar";
 
 export function RepoLayout(props: {
   repoMetadata: RepoMetadata;
