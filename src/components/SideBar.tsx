@@ -20,7 +20,10 @@ export const RepoSidebar = (props: { repoMetadata: RepoMetadata }) => {
           {new URL(repoMetadata.link).hostname +
             new URL(repoMetadata.link).pathname}
         </a>
+        
       </div>
+      <div className="h-4"/>
+      <h2 className="font-bold mb-4">Languages</h2>
     </div>
   );
 };

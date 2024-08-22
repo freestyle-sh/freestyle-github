@@ -4,6 +4,7 @@ import { RepoSidebar } from "../components/SideBar";
 import { CodeBar } from "../components/CodeBar";
 import { format } from "timeago.js";
 import { FileRow } from "../components/FileRow";
+import { CodebaseViewer } from "../components/CodebaseViewer";
 import Avatar from "../components/Avatar";
 
 export function RepoLayout(props: {
@@ -50,6 +51,7 @@ export function RepoLayout(props: {
               )
             )}
           </div>
+          <CodebaseViewer codeMetadata={codeMetadata} />
         </div>
         <div className="pl-4">
           <RepoSidebar repoMetadata={repoMetadata} />

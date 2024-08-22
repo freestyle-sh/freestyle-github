@@ -1,4 +1,6 @@
+import fs, { type StoreFS } from "@zenfs/core";
 import { cloudstate } from "freestyle-sh";
+import { type CloudStore, createFS } from "./filesystem";
 
 export interface RepoMetadata {
   name: string;
@@ -19,16 +21,72 @@ export type CodebaseMetadata = {
     shortHash: string;
   };
   totalCommits: number;
-  files: {
-    [path: string]: FileMetadata;
-  };
+  files: FileSystemMetadata;
 };
 
+export interface FileSystemMetadata {
+  [path: string]: FileMetadata;
+}
+
 export type FileType = "dir" | "file";
-export interface FileMetadata {
+export type FileMetadata = {
   fileType: FileType;
   lastestCommitMessage: string;
   lastestCommitDate: number;
+} & (
+  | {
+      fileType: "dir";
+      children: FileSystemMetadata;
+    }
+  | {
+      fileType: "file";
+    }
+);
+
+@cloudstate
+export class Repository {
+  readonly id: string;
+  owner: string;
+  name: string;
+  store: StoreFS<CloudStore>;
+
+  constructor(owner: string, name: string, store: StoreFS<CloudStore>) {
+    this.id = `${owner}/${name}`;
+    this.owner = owner;
+    this.name = name;
+    this.store = store;
+  }
+
+  mount() {
+    const FS = createFS();
+    return fs.mount(this.id, FS);
+  }
+
+  unmount() {
+    fs.umount(this.id);
+  }
+
+  [Symbol.dispose]() {
+    this.unmount();
+  }
+}
+
+@cloudstate
+export class RepoIndex {
+  static readonly id = "repo-index";
+
+  repos: Map<string, Repository> = new Map();
+
+  getOrCreateRepo(repo: { owner: string; name: string }) {
+    const repoId = `${repo.owner}/${repo.name}`;
+    const existingRepo = this.repos.get(repoId);
+    if (existingRepo) {
+      return existingRepo.id;
+    }
+    const newRepo = new Repository(repo.owner, repo.name, createFS());
+    this.repos.set(repoId, newRepo);
+    return newRepo.id;
+  }
 }
 
 @cloudstate
@@ -53,7 +111,7 @@ export class SimpleRepo {
     };
   }
 
-  getLatestCodebaseMetadata(path: string): CodebaseMetadata {
+  getLatestCodebaseMetadata(): CodebaseMetadata {
     return {
       latestCommit: {
         author: {
@@ -71,31 +129,89 @@ export class SimpleRepo {
           lastestCommitMessage: "Initial commit",
           lastestCommitDate: Date.now(),
         },
+        "package.json": {
+          fileType: "file",
+          lastestCommitMessage: "Initial commit",
+          lastestCommitDate: Date.now(),
+        },
+        "package-lock.json": {
+          fileType: "file",
+          lastestCommitMessage: "Initial commit",
+          lastestCommitDate: Date.now(),
+        },
+        "slambam.c": {
+          fileType: "file",
+          lastestCommitMessage: "Initial commit",
+          lastestCommitDate: Date.now(),
+        },
+        'pnpm-lock.yaml': {
+          fileType: 'file',
+          lastestCommitMessage: 'Initial commit',
+          lastestCommitDate: Date.now(),
+        },
         src: {
           fileType: "dir",
           lastestCommitMessage:
             "Initial commitafgasdgsdg this one is super long and will not be allowed to go to two lines god damn you",
           lastestCommitDate: Date.now(),
-        },
-        components: {
-          fileType: "dir",
-          lastestCommitMessage: "Initial commit",
-          lastestCommitDate: Date.now(),
-        },
-        icons: {
-          fileType: "dir",
-          lastestCommitMessage: "Initial commit",
-          lastestCommitDate: Date.now(),
-        },
-        layouts: {
-          fileType: "dir",
-          lastestCommitMessage: "Initial commit",
-          lastestCommitDate: Date.now(),
-        },
-        "package.json": {
-          fileType: "file",
-          lastestCommitMessage: "Initial commit",
-          lastestCommitDate: Date.now(),
+          children: {
+            cloudstate: {
+              fileType: "dir",
+              lastestCommitMessage: "Initial commit",
+              lastestCommitDate: Date.now(),
+              children: {
+                "simple-repo.ts": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+              },
+            },
+            components: {
+              fileType: "dir",
+              lastestCommitMessage: "Initial commit",
+              lastestCommitDate: Date.now(),
+              children: {
+                "RepoBar.tsx": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+                "RepoSidebar.tsx": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+                "CodeBar.tsx": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+                "FileRow.tsx": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+                "CodebaseViewer.tsx": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+              },
+            },
+            lib: {
+              fileType: "dir",
+              lastestCommitMessage: "Initial commit",
+              lastestCommitDate: Date.now(),
+              children: {
+                "icon-map.ts": {
+                  fileType: "file",
+                  lastestCommitMessage: "Initial commit",
+                  lastestCommitDate: Date.now(),
+                },
+              },
+            },
+          },
         },
       },
     };

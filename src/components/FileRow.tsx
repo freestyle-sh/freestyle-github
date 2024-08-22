@@ -8,6 +8,7 @@ export const FileRow = (props: {
     path: string;
   };
 }) => {
+    
   const {
     fileMetadata: file,
     fileMetadata: { path },

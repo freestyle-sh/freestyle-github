@@ -2,14 +2,18 @@
 import Layout from "../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
 import { SimpleRepo } from "../cloudstate/simple-repo";
-import {RepoLayout} from "../layouts/Repo.tsx";
-const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo")
+import { RepoLayout } from "../layouts/Repo.tsx";
+const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 
-const repoInfo = await simpleRepo.getInfo()
-const codeMeta = await simpleRepo.getLatestCodebaseMetadata("./")
+const repoInfo = await simpleRepo.getInfo();
+const codeMeta = await simpleRepo.getLatestCodebaseMetadata("./");
 ---
 
-<Layout title="Freestyle.sh Project">
-  <RepoLayout client:load repoMetadata={repoInfo} codeMetadata={codeMeta} >
-    
+<Layout title="Home">
+  <p
+    class="p-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center"
+  >
+    This page is no longer a repo page, it is now a Freestyle x Fortress page
+    (an ad you might say)
+  </p>
 </Layout>
