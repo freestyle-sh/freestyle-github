@@ -2,6 +2,7 @@ import fs, { InMemoryStore, StoreFS } from "@zenfs/core";
 import type { APIRoute } from "astro";
 import { useCloud } from "freestyle-sh";
 import type { RepoIndex, Repository } from "../../../../cloudstate/simple-repo";
+import { dirname } from "@zenfs/core/emulation/path.js";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   console.log("getting file");
@@ -13,7 +14,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   const data = await useCloud<typeof Repository>(id.id).getData();
 
   const map = new Map<bigint, Uint8Array>(
-    JSON.parse(await data.data).map(
+    JSON.parse(data.data).map(
       ([key, value]: [string, number /* Is this right? */]) => [
         BigInt(key),
         new Uint8Array(value),
@@ -34,6 +35,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   try {
     file = fs.readFileSync(`${params.repo}/.git/${params.path}`);
   } catch (e) {
+    fs.umount(`/${params.repo}`);
     return new Response(null, { status: 404 });
   }
 
@@ -116,7 +118,54 @@ export async function LOCK({ params, request }: Parameters<APIRoute>[0]) {
 
 export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   // Put the contents of the body into params.path
-  // console.log("PUT", params, await request.text());
+  console.log("PUT", params);
+
+  const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
+    owner: "JacobZwang",
+    name: params.repo!,
+  });
+
+  const repo = useCloud<typeof Repository>(id.id);
+  const data = await repo.getData();
+
+  const map = new Map<bigint, Uint8Array>(
+    JSON.parse(data.data).map(
+      ([key, value]: [string, number /* Is this right? */]) => [
+        BigInt(key),
+        new Uint8Array(value),
+      ],
+    ),
+  );
+
+  const store = new InMemoryStore();
+
+  map.forEach((value, key) => {
+    store.set(key, value);
+  });
+
+  if (fs.mounts.get(`/${params.repo}`)) {
+    fs.umount(`/${params.repo}`);
+  }
+  fs.mount(`/${params.repo}`, new StoreFS(store));
+
+  const file = `${params.repo}/.git/${params.path}`;
+  const parent = dirname(file);
+
+  try {
+    fs.mkdirSync(parent, { recursive: true });
+
+    fs.writeFileSync(file, await request.text());
+  } catch (e) {
+    return new Response(null, { status: 404 });
+  }
+
+  fs.umount(`/${params.repo}`);
+
+  return new Response();
+}
+
+export async function HEAD({ params, request }: Parameters<APIRoute>[0]) {
+  // console.log("HEAD", params);
   return new Response();
 }
 
