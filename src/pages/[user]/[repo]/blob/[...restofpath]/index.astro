@@ -1,12 +1,23 @@
 ---
 import Layout from "../../../../../layouts/Layout.astro";
 import { SimpleRepo } from "../../../../../cloudstate/simple-repo";
-import { useCloud } from "freestyle-sh";
+import { configureFreestyle, useCloud } from "freestyle-sh";
 import { FileIcon } from "../../../../../lib/icon-map";
+import type { AuthCS } from "../../../../../cloudstate/auth";
+
+configureFreestyle({
+  createHeaders: () => Astro.request.headers,
+});
 
 const simpleRepo = useCloud<typeof SimpleRepo>("simple-repo");
 const latest = await simpleRepo.getLatestCodebaseMetadata();
 const pathBeforeBlob = Astro.url.pathname.slice(0, Astro.url.pathname.length - Astro.params.restofpath?.length!)
+
+const auth = useCloud<typeof AuthCS>("auth");
+if (!auth.getCurrentUser()) {
+  return Astro.redirect("/signin");
+}
+
 
 ---
 

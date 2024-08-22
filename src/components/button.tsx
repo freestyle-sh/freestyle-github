@@ -5,13 +5,14 @@ export type ButtonStyle = "primary" | "secondary" | "icon";
 export type ButtonSpacing = "compact" | "normal";
 
 export type ButtonProps = {
-  onClick?: () => void;
+  onClick?: () => void | Promise<void>;
   disabled?: boolean;
   style?: ButtonStyle;
   spacing?: ButtonSpacing;
   dropdown?: boolean;
   type?: "button" | "submit" | "reset";
   children: React.ReactNode;
+  type?: "button" | "submit" | "reset";
 };
 
 export default function Button({
@@ -19,6 +20,7 @@ export default function Button({
   disabled = false,
   style = "secondary",
   spacing = "normal",
+  type = "button",
   dropdown = false,
   type,
   children,
@@ -26,6 +28,7 @@ export default function Button({
   return (
     <button
       onClick={onClick}
+      type={type}
       disabled={disabled}
       className={`${
         style === "primary"

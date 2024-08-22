@@ -4,6 +4,11 @@ import { CreateRepo } from "../components/Create";
 import generate from "boring-name-generator";
 
 const nameSuggestion = generate({ words: 3 }).dashed;
+import { configureFreestyle } from "freestyle-sh";
+
+configureFreestyle({
+  createHeaders: () => Astro.request.headers,
+});
 ---
 
 <Layout title="Create Repo">

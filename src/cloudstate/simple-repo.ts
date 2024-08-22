@@ -1,11 +1,13 @@
 import { cloudstate } from "freestyle-sh";
 
 export interface RepoMetadata {
+  id: string;
   name: string;
   description: string;
   link?: string;
   starCount: number;
   forkCount: number;
+  owner: string;
 }
 
 export type CodebaseMetadata = {
@@ -52,19 +54,28 @@ export class Repository {
   description: string;
   data: Blob;
 
-  constructor(
-    { owner, name, description, data }: {
-      owner: string;
-      name: string;
-      description: string;
-      data: Blob;
-    },
-  ) {
+  description = "";
+  link: string | undefined;
+
+  constructor({
+    owner,
+    name,
+    data,
+    description,
+    link,
+  }: {
+    owner: string;
+    name: string;
+    data: Blob;
+    description?: string;
+    link?: string;
+  }) {
     this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
-    this.description = description;
     this.data = data;
+    this.description = description ?? "";
+    this.link = link;
   }
 
   setData({ data }: { data: string }) {
@@ -76,6 +87,18 @@ export class Repository {
     console.log("getting data");
     return { data: await this.data.text() };
   }
+
+  metadata(): RepoMetadata {
+    return {
+      id: this.id,
+      owner: this.owner,
+      name: this.name,
+      description: this.description,
+      link: this.link,
+      starCount: 0,
+      forkCount: 0,
+    };
+  }
 }
 
 @cloudstate
@@ -83,10 +106,26 @@ export class RepoIndex {
   static readonly id = "repo-index";
 
   repos: Map<string, Repository> = new Map();
+  repoByOwnerName: Map<string, string> = new Map();
 
-  createRepo(repo: { owner: string; name: string; description: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+  listRepos() {
+    return Array.from(this.repos.values()).map((r) => r.metadata());
+  }
+
+  getOrCreateRepo(repo: { owner: string; name: string }) {
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
+    if (existingRepo) {
+      return { id: existingRepo.id };
+    }
+    return this.createRepo(repo);
+  }
+
+  createRepo(repo: { owner: string; name: string; description?: string }) {
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
 
     console.log("existing repo", existingRepo);
 
@@ -99,20 +138,45 @@ export class RepoIndex {
       name: repo.name,
       description: repo.description,
       data: new Blob(),
+      description: repo.description,
+      link: undefined,
     });
     this.repos.set(newRepo.id, newRepo);
+    this.repoByOwnerName.set(`${repo.owner}/${repo.name}`, newRepo.id);
     return { id: newRepo.id };
   }
 
+  getRepoMetadata(repoLocation: { owner: string; name: string }) {
+    const ownerName = `${repoLocation.owner}/${repoLocation.name}`;
+    const repoId = this.repoByOwnerName.get(ownerName);
+    if (!repoId) {
+      console.log("repo does not exist on index", ownerName);
+      return;
+    }
+    const repo = this.repos.get(repoId);
+    if (!repo) {
+      console.log("repo does not exist on index", repoId);
+      return;
+    }
+    return repo.metadata();
+  }
+
   getRepo(repo: { owner: string; name: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
 
     if (!existingRepo) {
       throw new Error("Repo does not exist");
     }
 
-    return { id: existingRepo.id };
+    return {
+      id: existingRepo.id,
+      owner: existingRepo.owner,
+      name: existingRepo.name,
+      description: existingRepo.description,
+      link: existingRepo.link,
+    };
   }
 }
 
@@ -130,6 +194,7 @@ export class SimpleRepo {
 
   getInfo(): RepoMetadata {
     return {
+      id: "simple-repo",
       name: this.name,
       description: this.description,
       link: this.link,

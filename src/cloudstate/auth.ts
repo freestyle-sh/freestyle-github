@@ -1,4 +1,4 @@
-import { cloudstate } from "freestyle-sh";
+import { cloudstate, useRequest } from "freestyle-sh";
 import {
   type BaseUserCS,
   type FinishPasskeyRegistrationJSON,
@@ -8,6 +8,18 @@ import { UserCS } from "./user";
 import { createAvatar } from "@dicebear/core";
 import { identicon } from "@dicebear/collection";
 import { ImageCS } from "./image";
+import { parse as parseCookie } from "cookie";
+
+function getSessionId() {
+  const request = useRequest();
+  const cookies = parseCookie(request.headers.get("cookie") ?? "");
+
+  const sessionId = cookies["freestyle-session-id"];
+  if (!sessionId) {
+    throw new Error("No session ID");
+  }
+  return sessionId;
+}
 
 @cloudstate
 export class AuthCS extends PasskeyAuthentication {
@@ -24,6 +36,9 @@ export class AuthCS extends PasskeyAuthentication {
       : `https://${this.rpid}`;
   }
 
+  signOut() {
+    this.sessions.delete(getSessionId());
+  }
   override async finishRegistration(passkey: FinishPasskeyRegistrationJSON) {
     const info = await super.finishRegistration(passkey);
     const avatar = createAvatar(identicon);
@@ -43,8 +58,8 @@ export class AuthCS extends PasskeyAuthentication {
     if (!info) {
       return;
     }
-    return Array.from(this.usersById.values()).find((user) =>
-      user.id === info.id
+    return Array.from(this.usersById.values()).find(
+      (user) => user.id === info.id
     );
   }
 
