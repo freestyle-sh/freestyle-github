@@ -5,6 +5,7 @@ import {fs} from "@zenfs/core"
 import { useCloud } from 'freestyle-sh';
 import { Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
 import { CloudStore } from '../../../../../cloudstate/filesystem';
+import type { APIRoute } from 'astro';
 
 // import fs from "node:fs";
 
@@ -14,10 +15,10 @@ import { CloudStore } from '../../../../../cloudstate/filesystem';
 //     }
 // });
 
-export async function GET({ params, request }) {
+export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     const id = await useCloud<typeof RepoIndex>("repo-index").getOrCreateRepo({
         owner: "JacobZwang",
-        name: params.repo,
+        name: params.repo!,
     });
 
     console.log("got repo id", id);

@@ -14,13 +14,13 @@ export const CreateRepo = () => {
                 onSubmit={async (e) => {
                     e.preventDefault();
                     if (repoName !== "" && repoDescription !== "") {
-                        await useCloud<typeof RepoIndex>("repo-index").createRepo({
-                            name: repoName,
-                            owner: "me",//TODO: HOOK IN KEVIN AUTH AND NOT PASS FROM FRONTEND
-                            description: repoDescription,
-                        }).then((repoId) => {
-                            window.location.href = `/${repoId}`;
-                        });
+                        // await useCloud<typeof RepoIndex>("repo-index").createRepo({
+                        //     name: repoName,
+                        //     owner: "me",//TODO: HOOK IN KEVIN AUTH AND NOT PASS FROM FRONTEND
+                        //     description: repoDescription,
+                        // }).then((repoId) => {
+                        //     window.location.href = `/${repoId}`;
+                        // });
                     }
 
                 }}
