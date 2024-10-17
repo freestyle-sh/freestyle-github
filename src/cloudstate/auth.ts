@@ -55,11 +55,12 @@ export class AuthCS extends PasskeyAuthentication {
 
   override getCurrentUser() {
     const info = super.getCurrentUser();
+    console.log(info);
     if (!info) {
       return;
     }
     return Array.from(this.usersById.values()).find(
-      (user) => user.id === info.id,
+      (user) => user.id === info.id
     );
   }
 
