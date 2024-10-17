@@ -22,9 +22,11 @@ export const FileRow = (props: {
     >
       <div className="text-gray-400 w-full flex items-center overflow-hidden shrink-0 gap-2">
         {file.fileType === "dir" ? <IconFileDirectory filled /> : <IconFile />}
-        <span className="text-gray-100 truncate hover:text-blue-500 hover:underline cursor-pointer">
+        <a className="text-gray-100 truncate hover:text-blue-500 hover:underline cursor-pointer" href={
+          props.fileMetadata.link
+        }>
           {path}
-        </span>
+        </a>
       </div>
       <div className="text-gray-400 items-center overflow-hidden truncate hidden md:block hover:text-blue-500 hover:underline cursor-pointer">
         {file.lastestCommitMessage}

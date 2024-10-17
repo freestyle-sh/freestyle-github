@@ -30,7 +30,7 @@ await git.add({
       console.log(
         prefix,
         file,
-        fs.readFileSync(`${"test"}/.git/objects/${prefix}/${file}`).toString()
+        fs.readFileSync(`${"test"}/.git/objects/${prefix}/${file}`).toString(),
       );
     }
   }

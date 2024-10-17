@@ -1,5 +1,5 @@
 import { cloudstate } from "freestyle-sh";
-import { fs, InMemoryStore, StoreFS } from "@zenfs/core";
+import { fs, InMemoryStore, StoreFS, umount } from "@zenfs/core";
 import git from "isomorphic-git";
 
 export interface RepoMetadata {
@@ -77,6 +77,14 @@ export class Repository {
     this.data = new Blob([data]);
   }
 
+  async getFile(str: string) {
+    await getOrMountRepo(this.id, this.data);
+    const file = fs.readFileSync(`/${this.id}/${str}`, {});
+    umount(`/${this.id}`);
+    const fileText = new TextDecoder().decode(file);
+    return fileText;
+  }
+
   async getData() {
     console.log("getting data");
     return { data: await this.data.text() };
@@ -120,9 +128,10 @@ export class Repository {
 
       meta[file] = {
         fileType: "file",
-        link: file,
-        lastestCommitMessage: log.commit.message,
-        lastestCommitDate: log.commit.committer.timestamp * 1000,
+        link: `/${this.owner}/${this.name}/blob/main/${file}`,
+        lastestCommitMessage: "Not a real commit",
+        lastestCommitDate: Date.now(),
+        path: file,
       };
     }
 
@@ -167,6 +176,7 @@ export async function getOrMountRepo(id: string, data?: Blob) {
       store.set(key, value);
     }
   }
+  store.sync();
   const storefs = new StoreFS(store);
   try {
     fs.mount(`/${id}`, storefs);
@@ -213,6 +223,7 @@ export class RepoIndex {
   }
 
   async createRepo(repo: { owner: string; name: string }) {
+    // @ts-ignore
     Blob.prototype.stream = undefined;
     const existingRepo = Array.from(this.repos.values()).find(
       (r) => r.name === repo.name && r.owner === repo.owner
