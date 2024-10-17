@@ -102,29 +102,44 @@ export class Repository {
 
     const meta: FileSystemMetadata = {};
 
+    const logs = await git.log({
+      fs,
+      dir: `/${this.id}`,
+      ref: "main",
+    });
+
     for (const file of files.filter((file) => file !== ".git")) {
+      const log = await git
+        .log({
+          fs,
+          dir: `/${this.id}`,
+          ref: "main",
+          filepath: file,
+        })
+        .then((logs) => logs.at(-1)!);
+
       meta[file] = {
         fileType: "file",
         link: file,
-        lastestCommitMessage: "Not a real commit",
-        lastestCommitDate: Date.now(),
-        path: file,
+        lastestCommitMessage: log.commit.message,
+        lastestCommitDate: log.commit.committer.timestamp * 1000,
       };
     }
 
-    console.log("meta", meta);
+    console.log(meta);
 
+    const lastCommit = logs.at(-1)!;
     return {
       latestCommit: {
         author: {
-          username: "JacobZwang",
-          avatar: "https://avatars.githubusercontent.com/u/37193648?v=4",
+          username: lastCommit.commit.author.name,
+          avatar: "https://picsum.photos/id/1015/200/200",
         },
-        message: "Not a real commit",
-        date: Date.now(),
-        shortHash: "123456",
+        message: lastCommit.commit.message,
+        date: lastCommit.commit.committer.timestamp * 1000,
+        shortHash: lastCommit.oid.slice(0, 7),
       },
-      totalCommits: 1,
+      totalCommits: logs.length,
       files: meta,
     };
   }
