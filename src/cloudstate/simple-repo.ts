@@ -22,6 +22,7 @@ export type CodebaseMetadata = {
   };
   totalCommits: number;
   files: FileSystemMetadata;
+  readme?: string;
 };
 
 export interface FileSystemMetadata {
@@ -34,6 +35,7 @@ export type FileMetadata = {
   link: string;
   lastestCommitMessage: string;
   lastestCommitDate: number;
+  path: string;
 } & (
   | {
       fileType: "dir";
@@ -116,6 +118,16 @@ export class Repository {
       ref: "main",
     });
 
+    let readme = undefined;
+    try {
+      readme = fs.readFileSync(`/${this.id}/README.md`).toString();
+    } catch (e) {
+      console.log(e);
+      readme = undefined;
+    }
+
+    console.log("readme", readme);
+
     for (const file of files.filter((file) => file !== ".git")) {
       const log = await git
         .log({
@@ -150,6 +162,7 @@ export class Repository {
       },
       totalCommits: logs.length,
       files: meta,
+      readme: readme,
     };
   }
 }
@@ -258,13 +271,16 @@ export class RepoIndex {
       checkout: true,
     });
 
-    fs.writeFileSync(`/${newRepo.id}/test.txt`, "test");
+    fs.writeFileSync(
+      `/${newRepo.id}/README.md`,
+      `# ${newRepo.name}\n\n${newRepo.description}`
+    );
     console.log("wrote file");
 
     await git.add({
       fs,
       dir: `/${newRepo.id}`,
-      filepath: "test.txt",
+      filepath: "README.md",
     });
 
     {

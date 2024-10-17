@@ -10,6 +10,7 @@ import Avatar from "../components/Avatar";
 export function RepoLayout(props: {
   repoMetadata: RepoMetadata;
   codeMetadata: CodebaseMetadata;
+  markdownViewer?: React.ReactNode;
 }) {
   const { repoMetadata, codeMetadata } = props;
 
@@ -21,6 +22,7 @@ export function RepoLayout(props: {
           <CodeBar />
           <div className="mt-4" />
           <CodebaseViewer codeMetadata={codeMetadata} />
+          <div>{codeMetadata.readme && props.markdownViewer}</div>
         </div>
         <div className="sm:pl-4">
           <RepoSidebar repoMetadata={repoMetadata} />
