@@ -10,8 +10,10 @@ export default defineConfig({
   adapter: deno(),
   integrations: [svelte(), react(), tailwind()],
   output: "server",
+  
   vite: {
     esbuild: {
+      
       target: "esnext",
       format: "esm",
       platform: "node",
