@@ -169,7 +169,11 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
     ),
   });
 
-  fs.umount(`/${id}`);
+  try {
+    fs.umount(`/${id}`);
+  } catch (e) {
+    console.warn("Failed to unmount", e);
+  }
 
   store.sync();
 
