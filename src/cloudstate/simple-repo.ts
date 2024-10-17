@@ -129,8 +129,8 @@ export class Repository {
       meta[file] = {
         fileType: "file",
         link: `/${this.owner}/${this.name}/blob/main/${file}`,
-        lastestCommitMessage: "Not a real commit",
-        lastestCommitDate: Date.now(),
+        lastestCommitMessage: log.commit.message,
+        lastestCommitDate: log.commit.committer.timestamp * 1000,
         path: file,
       };
     }
