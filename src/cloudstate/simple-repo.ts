@@ -160,6 +160,7 @@ export async function getOrMountRepo(id: string, data?: Blob) {
       store.set(key, value);
     }
   }
+  store.sync();
   const storefs = new StoreFS(store);
   try {
     fs.mount(`/${id}`, storefs);
