@@ -51,6 +51,7 @@ export class Repository {
   readonly id: string;
   owner: string;
   name: string;
+  description: string = "";
   data: Blob;
 
   constructor(
@@ -60,6 +61,7 @@ export class Repository {
     this.owner = owner;
     this.name = name;
     this.data = data;
+    this.description = `A repository for ${this.owner}/${this.name}`;
   }
 
   setData({ data }: { data: string }) {
@@ -167,6 +169,17 @@ export class RepoIndex {
 
   repos: Map<string, Repository> = new Map();
 
+  listRepos() {
+    return Array.from(this.repos.values()).map((r) => ({
+      id: r.id,
+      name: r.name,
+      owner: r.owner,
+      description: r.description,
+      starCount: 0,
+      forkCount: 0,
+    }));
+  }
+  
   async createRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values())
       .find((r) => r.name === repo.name && r.owner === repo.owner);

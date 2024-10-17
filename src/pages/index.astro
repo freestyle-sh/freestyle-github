@@ -10,7 +10,7 @@ import { CreateRepoButton } from "../components/CreateRepoButton";
 const auth = useCloud<typeof AuthCS>("auth");
 
 const repoIndex = useCloud<typeof RepoIndex>("repo-index");
-const repos = await repoIndex.listRepos();
+const repos = await repoIndex.listRepos() ?? [];
 
 const usr = await auth.getUserInfo().catch(() => null);
 if (!usr) {

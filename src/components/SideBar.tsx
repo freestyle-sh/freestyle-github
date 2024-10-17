@@ -27,7 +27,6 @@ export const RepoSidebar = (props: { repoMetadata: RepoMetadata }) => {
           </>
         ): ""}
       <div className="h-4" />
-      <h2 className="font-bold mb-4">Languages</h2>
     </div>
   );
 };

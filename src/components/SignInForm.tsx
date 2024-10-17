@@ -22,7 +22,7 @@ export const SignInForm = () => {
             <h1>Sign In Please</h1>
             <div className="bg-[#161b22] p-4 rounded-lg mt-4 flex flex-col px-4">
                 <label className="flex flex-col">
-                    <span className="text-white mb-4">Username</span>
+                    <span className="text-white mb-2">Username</span>
 
                     <input
                         onChange={(e) => setUsername(e.target.value)}
