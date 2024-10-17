@@ -1,7 +1,7 @@
 import fs, { InMemoryStore, StoreFS } from "@zenfs/core";
 import type { APIRoute } from "astro";
 import { useCloud } from "freestyle-sh";
-import zlib from 'node:zlib';
+import zlib from "node:zlib";
 import {
   getOrMountRepo,
   RepoIndex,
@@ -26,7 +26,6 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     // console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/${params.split('')}`), params.path);
     file = fs.readFileSync(`${repo.id}/.git/${params.path}`);
     console.log(`File @ ${params.path} is`, file);
-    
   } catch (e) {
     console.log("failed to read file", `${repo.id}/.git/${params.path}`);
 
@@ -35,7 +34,6 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
 
   fs.umount(`/${repo.id}`);
   return new Response(file);
-
 }
 
 // Tells Git that the server supports locking
