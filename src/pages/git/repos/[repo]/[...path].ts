@@ -1,7 +1,11 @@
 import fs, { InMemoryStore, StoreFS } from "@zenfs/core";
 import type { APIRoute } from "astro";
 import { useCloud } from "freestyle-sh";
-import { getOrMountRepo, RepoIndex, Repository } from "../../../../cloudstate/simple-repo";
+import {
+  getOrMountRepo,
+  RepoIndex,
+  Repository,
+} from "../../../../cloudstate/simple-repo";
 import { dirname } from "@zenfs/core/emulation/path.js";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
@@ -10,10 +14,10 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   const repo = await useCloud<typeof RepoIndex>("repo-index").getRepo({
     owner: "JacobZwang",
     name: params.repo!,
-  })
+  });
 
-    const data = await useCloud<typeof Repository>(repo.id).getData();
-    getOrMountRepo(repo.id, new Blob([data.data]));
+  const data = await useCloud<typeof Repository>(repo.id).getData();
+  getOrMountRepo(repo.id, new Blob([data.data]));
 
   let file: Uint8Array | null = null;
 
@@ -26,9 +30,9 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     return new Response(null, { status: 404 });
   }
 
-//   try {
-//       fs.umount(`/${params.repo}`);
-//     } catch (e) {}
+  //   try {
+  //       fs.umount(`/${params.repo}`);
+  //     } catch (e) {}
 
   return new Response(file);
 }

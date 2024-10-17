@@ -29,22 +29,20 @@ export interface FileSystemMetadata {
 }
 
 export type FileType = "dir" | "file";
-export type FileMetadata =
-  & {
-    fileType: FileType;
-    link: string;
-    lastestCommitMessage: string;
-    lastestCommitDate: number;
-  }
-  & (
-    | {
+export type FileMetadata = {
+  fileType: FileType;
+  link: string;
+  lastestCommitMessage: string;
+  lastestCommitDate: number;
+} & (
+  | {
       fileType: "dir";
       children: FileSystemMetadata;
     }
-    | {
+  | {
       fileType: "file";
     }
-  );
+);
 
 @cloudstate
 export class Repository {
@@ -54,9 +52,15 @@ export class Repository {
   description: string = "";
   data: Blob;
 
-  constructor(
-    { owner, name, data }: { owner: string; name: string; data: Blob },
-  ) {
+  constructor({
+    owner,
+    name,
+    data,
+  }: {
+    owner: string;
+    name: string;
+    data: Blob;
+  }) {
     this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
@@ -88,14 +92,13 @@ export class Repository {
     //   ref: "main",
     // }).catch(e => console.log(e));
 
-
-    const files = fs.readdirSync(`/${this.id}`)
+    const files = fs.readdirSync(`/${this.id}`);
 
     console.log("files", files);
 
     const meta: FileSystemMetadata = {};
 
-    for (const file of files.filter(file => file !== ".git")) {
+    for (const file of files.filter((file) => file !== ".git")) {
       meta[file] = {
         fileType: "file",
         link: file,
@@ -124,35 +127,41 @@ export class Repository {
 }
 
 export async function getOrMountRepo(id: string, data?: Blob) {
-  const existingMount = Array.from(fs.mounts.entries()).find(([name, mount]) => name === `/${id}`);
+  const existingMount = Array.from(fs.mounts.entries()).find(
+    ([name, mount]) => name === `/${id}`,
+  );
   if (existingMount) {
     try {
-
       fs.umount(`/${id}`);
     } catch (e) {}
   }
 
   // if (!existingMount) {
-    const store = new InMemoryStore();
-    if (data) {
-      const entries = JSON.parse(await data.text()).map((
-        [key, value]: [string, any],
-      ) => [BigInt(key), new Uint8Array(value)]);
-      entries.forEach(([key, value]) => store.set(key, value));
-    }
-    const storefs = new StoreFS(store);
-    try {
-      fs.mount(`/${id}`, storefs);
-    } catch (e) {}
-    storefs.checkRootSync();
-    return store;
+  const store = new InMemoryStore();
+  if (data) {
+    const entries = JSON.parse(await data.text()).map(
+      ([key, value]: [string, any]) => [BigInt(key), new Uint8Array(value)],
+    );
+    entries.forEach(([key, value]) => store.set(key, value));
+  }
+  const storefs = new StoreFS(store);
+  try {
+    fs.mount(`/${id}`, storefs);
+  } catch (e) {}
+  storefs.checkRootSync();
+  return store;
   // } else {
   //   return fs.mounts.entries()
   // }
 }
 
 export async function inMemoryStoreToBlob(store: InMemoryStore) {
-  const json = JSON.stringify(Array.from(store.entries()).map(([key, value]) => [key.toString(), Array.from(value)]));
+  const json = JSON.stringify(
+    Array.from(store.entries()).map(([key, value]) => [
+      key.toString(),
+      Array.from(value),
+    ]),
+  );
   return new Blob([json]);
 }
 
@@ -160,8 +169,8 @@ Response.prototype.arrayBuffer = async function () {
   // console.log(this.constructor.prototype);
   const encoder = new TextEncoder();
   const arrayBuffer = encoder.encode(await this.text()).buffer;
-  return await (arrayBuffer)
-}
+  return await arrayBuffer;
+};
 
 @cloudstate
 export class RepoIndex {
@@ -179,10 +188,11 @@ export class RepoIndex {
       forkCount: 0,
     }));
   }
-  
+
   async createRepo(repo: { owner: string; name: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
 
     console.log("existing repo", existingRepo);
 
@@ -207,30 +217,30 @@ export class RepoIndex {
     console.log("initialized");
 
     await git.branch({
-        fs,
-        dir: `/${newRepo.id}`,
-        ref: "main",
-        checkout: true,
+      fs,
+      dir: `/${newRepo.id}`,
+      ref: "main",
+      checkout: true,
     });
 
-    fs.writeFileSync( `/${newRepo.id}` + "/test.txt", "test");
+    fs.writeFileSync(`/${newRepo.id}` + "/test.txt", "test");
 
     console.log(fs.readdirSync(`/${newRepo.id}`));
 
     await git.add({
-        fs,
-        dir: `/${newRepo.id}`,
-        filepath: "test.txt",
+      fs,
+      dir: `/${newRepo.id}`,
+      filepath: "test.txt",
     });
 
     await git.commit({
-        fs,
-        dir: `/${newRepo.id}`,
-        message: "first commit",
-        author: {
-            name: "Jacob Zwang",
-            email: "59858341+JacobZwang@users.noreply.github.com",
-        },
+      fs,
+      dir: `/${newRepo.id}`,
+      message: "first commit",
+      author: {
+        name: "Jacob Zwang",
+        email: "59858341+JacobZwang@users.noreply.github.com",
+      },
     });
 
     console.log("committed");
@@ -243,8 +253,9 @@ export class RepoIndex {
   }
 
   getRepo(repo: { owner: string; name: string }) {
-    const existingRepo = Array.from(this.repos.values())
-      .find((r) => r.name === repo.name && r.owner === repo.owner);
+    const existingRepo = Array.from(this.repos.values()).find(
+      (r) => r.name === repo.name && r.owner === repo.owner,
+    );
 
     if (!existingRepo) {
       throw new Error("Repo does not exist");

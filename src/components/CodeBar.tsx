@@ -15,19 +15,19 @@ export const CodeBar = () => {
           main
         </Button>
         <div className="hidden sm:block">
-        <Button style="icon" >
-          <IconGitBranch />
-        </Button>
+          <Button style="icon">
+            <IconGitBranch />
+          </Button>
         </div>
       </div>
       <div className="flex flex-row space-x-2">
         <div className="hidden sm:block">
-        <Input
-          leadingIcon={<IconSearch />}
-          placeholder="Go to file"
-          value={fileQuery}
-          onChange={(e) => setFileQuery(e.target.value)}
-        />
+          <Input
+            leadingIcon={<IconSearch />}
+            placeholder="Go to file"
+            value={fileQuery}
+            onChange={(e) => setFileQuery(e.target.value)}
+          />
         </div>
         <Button style="primary" dropdown>
           <IconCode />

@@ -57,7 +57,6 @@ export class CloudStoreTransaction extends Transaction<CloudStore> {
   }
 }
 
-
 export class CloudStore implements Store {
   name = "CloudStore";
   data = new Map<Ino, Uint8Array>();

@@ -15,7 +15,7 @@ export default defineConfig({
       target: "esnext",
       format: "esm",
       platform: "node",
-      keepNames: true
-    }
-  }
+      keepNames: true,
+    },
+  },
 });

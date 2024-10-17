@@ -5,8 +5,8 @@ export type ButtonStyle = "primary" | "secondary" | "icon";
 export type ButtonSpacing = "compact" | "normal";
 
 export type ButtonProps = {
-  onClick?: (evt: 
-    React.MouseEvent<HTMLButtonElement, MouseEvent>
+  onClick?: (
+    evt: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void | Promise<void>;
   disabled?: boolean;
   style?: ButtonStyle;

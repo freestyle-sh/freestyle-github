@@ -17,14 +17,18 @@ const Input = (props: InputProps) => {
         <div className="absolute left-3 text-gray-400">{props.leadingIcon}</div>
       )}
       <input
-      type="text"
-        
+        type="text"
         placeholder={props.placeholder}
         value={props.value}
         onSubmit={props.onSubmit}
         name={props.name}
         onChange={props.onChange}
-        className={"bg-transparent rounded-lg border border-[#30363d] text-sm py-1.5 pr-3 focus:outline-none focus:border-blue-500 " + (props.leadingIcon ? "pl-9" : "pl-3") + " " + props.className}
+        className={
+          "bg-transparent rounded-lg border border-[#30363d] text-sm py-1.5 pr-3 focus:outline-none focus:border-blue-500 " +
+          (props.leadingIcon ? "pl-9" : "pl-3") +
+          " " +
+          props.className
+        }
       />
     </div>
   );

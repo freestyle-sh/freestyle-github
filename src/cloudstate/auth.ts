@@ -59,7 +59,7 @@ export class AuthCS extends PasskeyAuthentication {
       return;
     }
     return Array.from(this.usersById.values()).find(
-      (user) => user.id === info.id
+      (user) => user.id === info.id,
     );
   }
 

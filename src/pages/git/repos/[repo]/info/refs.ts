@@ -1,11 +1,16 @@
 // import {InMemoryStore, StoreFS} from '@zenfs/core';
-import { configure, InMemory, InMemoryStore, StoreFS } from '@zenfs/core';
+import { configure, InMemory, InMemoryStore, StoreFS } from "@zenfs/core";
 import git from "isomorphic-git";
-import {fs} from "@zenfs/core"
-import { useCloud } from 'freestyle-sh';
-import { getOrMountRepo, Repository, SimpleRepo, type RepoIndex } from '../../../../../cloudstate/simple-repo';
-import { CloudStore } from '../../../../../cloudstate/filesystem';
-import type { APIRoute } from 'astro';
+import { fs } from "@zenfs/core";
+import { useCloud } from "freestyle-sh";
+import {
+  getOrMountRepo,
+  Repository,
+  SimpleRepo,
+  type RepoIndex,
+} from "../../../../../cloudstate/simple-repo";
+import { CloudStore } from "../../../../../cloudstate/filesystem";
+import type { APIRoute } from "astro";
 
 // import fs from "node:fs";
 
@@ -16,45 +21,48 @@ import type { APIRoute } from 'astro';
 // });
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
-    const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
-        owner: "JacobZwang",
-        name: params.repo!,
-    }).catch(() => ({
-        id: undefined,
+  const { id } = await useCloud<typeof RepoIndex>("repo-index")
+    .getRepo({
+      owner: "JacobZwang",
+      name: params.repo!,
+    })
+    .catch(() => ({
+      id: undefined,
     }));
 
-    if (!id) {
-        return new Response("Repo does not exist", {
-            status: 404,
-        });
-    }
-    
-
-    console.log("got repo id", id);
-
-    const data = await useCloud<typeof Repository>(id).getData();
-    await getOrMountRepo(id, new Blob([data.data]));
-
-    fs.readdirSync(`${id}/.git/objects/`).forEach(file => {
-        fs.readdirSync(`${id}/.git/objects/${file}`).forEach(file2 => {
-            console.log(file2);
-        });
+  if (!id) {
+    return new Response("Repo does not exist", {
+      status: 404,
     });
+  }
 
-    const heads = fs.readdirSync(`${id}/.git/refs/heads`);
+  console.log("got repo id", id);
 
-    let refs = "";
-    for (const head of heads) {
-        refs += fs.readFileSync(`${id}/.git/refs/heads/${head}`).toString().trim() + `\trefs/heads/${head}`;
-    }
+  const data = await useCloud<typeof Repository>(id).getData();
+  await getOrMountRepo(id, new Blob([data.data]));
 
-    refs += "\n";
+  fs.readdirSync(`${id}/.git/objects/`).forEach((file) => {
+    fs.readdirSync(`${id}/.git/objects/${file}`).forEach((file2) => {
+      console.log(file2);
+    });
+  });
 
-    // try {
-    //     fs.umount(`/${id}`);
-    // } catch (e) {}
+  const heads = fs.readdirSync(`${id}/.git/refs/heads`);
 
-    console.log("umounted");
+  let refs = "";
+  for (const head of heads) {
+    refs +=
+      fs.readFileSync(`${id}/.git/refs/heads/${head}`).toString().trim() +
+      `\trefs/heads/${head}`;
+  }
 
-    return new Response(refs);
+  refs += "\n";
+
+  // try {
+  //     fs.umount(`/${id}`);
+  // } catch (e) {}
+
+  console.log("umounted");
+
+  return new Response(refs);
 }
