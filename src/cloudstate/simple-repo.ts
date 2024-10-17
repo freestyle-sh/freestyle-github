@@ -132,7 +132,7 @@ export class Repository {
 
 export async function getOrMountRepo(id: string, data?: Blob) {
   const existingMount = Array.from(fs.mounts.entries()).find(
-    ([name, mount]) => name === `/${id}`,
+    ([name, mount]) => name === `/${id}`
   );
   if (existingMount) {
     try {
@@ -144,9 +144,10 @@ export async function getOrMountRepo(id: string, data?: Blob) {
   const store = new InMemoryStore();
   if (data) {
     const text = await data.text();
-    const entries = JSON.parse(text).map(
-      ([key, value]: [string, number]) => [BigInt(key), new Uint8Array(value)],
-    );
+    const entries = JSON.parse(text).map(([key, value]: [string, number]) => [
+      BigInt(key),
+      new Uint8Array(value),
+    ]);
     for (const [key, value] of entries) {
       store.set(key, value);
     }
@@ -167,7 +168,7 @@ export async function inMemoryStoreToBlob(store: InMemoryStore) {
     Array.from(store.entries()).map(([key, value]) => [
       key.toString(),
       Array.from(value),
-    ]),
+    ])
   );
   return new Blob([json]);
 }
@@ -198,7 +199,7 @@ export class RepoIndex {
 
   async createRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     console.log("existing repo", existingRepo);
@@ -240,6 +241,22 @@ export class RepoIndex {
       filepath: "test.txt",
     });
 
+    {
+      for (const prefix of fs.readdirSync(`${newRepo.id}/.git/objects`)) {
+        for (const file of fs.readdirSync(
+          `${newRepo.id}/.git/objects/${prefix}`
+        )) {
+          console.log(
+            prefix,
+            file,
+            fs
+              .readFileSync(`${newRepo.id}/.git/objects/${prefix}/${file}`)
+              .toString()
+          );
+        }
+      }
+    }
+
     await git.commit({
       fs,
       dir: `/${newRepo.id}`,
@@ -261,7 +278,7 @@ export class RepoIndex {
 
   getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     if (!existingRepo) {
