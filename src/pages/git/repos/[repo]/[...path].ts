@@ -4,13 +4,14 @@ import { useCloud } from "freestyle-sh";
 import zlib from "node:zlib";
 import {
   getOrMountRepo,
+  inMemoryStoreToBlob,
   RepoIndex,
   Repository,
 } from "../../../../cloudstate/simple-repo";
 import { dirname } from "@zenfs/core/emulation/path.js";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
-  console.log("getting file");
+  console.log("GET", params);
 
   const repo = await useCloud<typeof RepoIndex>("repo-index").getRepo({
     owner: "JacobZwang",
@@ -23,11 +24,20 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   let file: Uint8Array | null = null;
 
   try {
-    // console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/${params.split('')}`), params.path);
-    file = fs.readFileSync(`${repo.id}/.git/${params.path}`);
+    try {
+      for (const file of fs.readdirSync(`/${repo.id}/.git/objects/be`)) {
+        console.log("FILE", `/${repo.id}/.git/${file}`, file);
+      }
+    } catch (e) {}
+    // console.log(
+    //   "REPO FILES",
+    //   fs.readdirSync(`/${repo.id}/.git/${params.path}`),
+    //   params.path
+    // );
+    file = fs.readFileSync(`/${repo.id}/.git/${params.path}`);
     console.log(`File @ ${params.path} is`, file);
   } catch (e) {
-    console.log("failed to read file", `${repo.id}/.git/${params.path}`);
+    console.log("failed to read file", `${repo.id}/.git/${params.path}`, e);
 
     return new Response(null, { status: 404 });
   }
@@ -56,7 +66,7 @@ export async function PROPFIND({
       </D:prop>
     </D:propstat>
   </D:response>
-</D:multistatus>`,
+</D:multistatus>`
   );
 }
 
@@ -77,7 +87,7 @@ export async function MKCOL({ params, request }: Parameters<APIRoute>[0]) {
           </D:prop>
         </D:propstat>
       </D:response>
-    </D:multistatus>`,
+    </D:multistatus>`
   );
 }
 
@@ -104,7 +114,7 @@ export async function LOCK({ params, request }: Parameters<APIRoute>[0]) {
           </D:activelock>
         </D:lockdiscovery>
       </D:prop>
-`,
+`
   );
 }
 
@@ -143,7 +153,21 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
     return new Response(null, { status: 404 });
   }
 
+  store.sync();
+
+  // repo.setData = blob;
+  await repo.setData({
+    data: JSON.stringify(
+      Array.from(store.entries()).map(([key, value]) => [
+        key.toString(),
+        Array.from(value),
+      ])
+    ),
+  });
+
   fs.umount(`/${id}`);
+
+  store.sync();
 
   return new Response();
 }
@@ -155,7 +179,8 @@ export async function HEAD({ params, request }: Parameters<APIRoute>[0]) {
 
 export async function MOVE({ params, request }: Parameters<APIRoute>[0]) {
   // TODO: Figure out what this is supposed to do
-  // console.log("MOVE", params, "text", await request.blob());
+  console.log("MOVE", params, "text", await request.blob());
+
   return new Response();
 }
 

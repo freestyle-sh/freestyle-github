@@ -132,7 +132,7 @@ export class Repository {
 
 export async function getOrMountRepo(id: string, data?: Blob) {
   const existingMount = Array.from(fs.mounts.entries()).find(
-    ([name, mount]) => name === `/${id}`,
+    ([name, mount]) => name === `/${id}`
   );
   if (existingMount) {
     try {
@@ -152,6 +152,7 @@ export async function getOrMountRepo(id: string, data?: Blob) {
       store.set(key, value);
     }
   }
+  store.sync();
   const storefs = new StoreFS(store);
   try {
     fs.mount(`/${id}`, storefs);
@@ -168,7 +169,7 @@ export async function inMemoryStoreToBlob(store: InMemoryStore) {
     Array.from(store.entries()).map(([key, value]) => [
       key.toString(),
       Array.from(value),
-    ]),
+    ])
   );
   return new Blob([json]);
 }
@@ -201,7 +202,7 @@ export class RepoIndex {
     // @ts-ignore
     Blob.prototype.stream = undefined;
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     console.log("existing repo", existingRepo);
@@ -245,7 +246,7 @@ export class RepoIndex {
     {
       for (const prefix of fs.readdirSync(`${newRepo.id}/.git/objects`)) {
         for (const file of fs.readdirSync(
-          `${newRepo.id}/.git/objects/${prefix}`,
+          `${newRepo.id}/.git/objects/${prefix}`
         )) {
           console.log(
             "LOgging file",
@@ -253,7 +254,7 @@ export class RepoIndex {
             file,
             fs
               .readFileSync(`${newRepo.id}/.git/objects/${prefix}/${file}`)
-              .toString(),
+              .toString()
           );
         }
       }
@@ -280,7 +281,7 @@ export class RepoIndex {
 
   getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     if (!existingRepo) {
