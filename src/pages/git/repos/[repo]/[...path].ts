@@ -11,6 +11,8 @@ import { dirname } from "@zenfs/core/emulation/path.js";
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   console.log("getting file");
 
+  // console.log("PARAMS REPO", params.repo);  
+
   const repo = await useCloud<typeof RepoIndex>("repo-index").getRepo({
     owner: "JacobZwang",
     name: params.repo!,
@@ -19,11 +21,14 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   const data = await useCloud<typeof Repository>(repo.id).getData();
   await getOrMountRepo(repo.id, new Blob([data.data]));
 
-  let file: Uint8Array | null = null;
+  let file: Buffer | null = null;
 
   try {
-    file = fs.readFileSync(`${params.repo}/.git/${params.path}`);
+    console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/`), params.path);
+    file = fs.readFileSync(`${repo.id}/.git/${params.path}`);
+    console.log("FILE IS", file);
   } catch (e) {
+    console.log("FAILED TO READ FILE", e.message);
     // try {
     //     fs.umount(`/${params.repo}`);
     // } catch (e) {}
@@ -34,7 +39,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   //       fs.umount(`/${params.repo}`);
   //     } catch (e) {}
 
-  return new Response(file);
+  return new Response(file.buffer);
 }
 
 // Tells Git that the server supports locking
@@ -122,6 +127,7 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   const data = await repo.getData();
 
   const store = await getOrMountRepo(id.id, new Blob([data.data]));
+
 
   if (fs.mounts.get(`/${params.repo}`)) {
     fs.umount(`/${params.repo}`);

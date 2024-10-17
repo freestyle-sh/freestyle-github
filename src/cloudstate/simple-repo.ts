@@ -143,7 +143,8 @@ export async function getOrMountRepo(id: string, data?: Blob) {
   // if (!existingMount) {
   const store = new InMemoryStore();
   if (data) {
-    const entries = JSON.parse(await data.text()).map(
+    const text = await data.text();
+    const entries = JSON.parse(text).map(
       ([key, value]: [string, number]) => [BigInt(key), new Uint8Array(value)],
     );
     for (const [key, value] of entries) {
