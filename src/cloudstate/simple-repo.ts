@@ -272,8 +272,8 @@ export class RepoIndex {
       name: existingRepo.name,
       owner: existingRepo.owner,
       description: existingRepo.description,
-      starCount: 0,
-      forkCount: 0,
+      starCount: existingRepo.starCount,
+      forkCount: existingRepo.forkCount,
     };
   }
 }

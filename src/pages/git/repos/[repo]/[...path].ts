@@ -17,7 +17,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   });
 
   const data = await useCloud<typeof Repository>(repo.id).getData();
-  getOrMountRepo(repo.id, new Blob([data.data]));
+  await getOrMountRepo(repo.id, new Blob([data.data]));
 
   let file: Uint8Array | null = null;
 
@@ -121,7 +121,7 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   const repo = useCloud<typeof Repository>(id.id);
   const data = await repo.getData();
 
-  getOrMountRepo(id.id, new Blob([data.data]));
+  const store = await getOrMountRepo(id.id, new Blob([data.data]));
 
   if (fs.mounts.get(`/${params.repo}`)) {
     fs.umount(`/${params.repo}`);
