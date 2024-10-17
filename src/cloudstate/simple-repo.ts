@@ -1,5 +1,5 @@
 import { cloudstate } from "freestyle-sh";
-import { fs, InMemoryStore, StoreFS } from "@zenfs/core";
+import { fs, InMemoryStore, StoreFS, umount } from "@zenfs/core";
 import git from "isomorphic-git";
 
 export interface RepoMetadata {
@@ -77,6 +77,14 @@ export class Repository {
     this.data = new Blob([data]);
   }
 
+  async getFile(str: string) {
+    await getOrMountRepo(this.id, this.data);
+    const file = fs.readFileSync(`/${this.id}/${str}`, {});
+    umount(`/${this.id}`);
+    const fileText = new TextDecoder().decode(file);
+    return fileText;
+  }
+
   async getData() {
     console.log("getting data");
     return { data: await this.data.text() };
@@ -105,7 +113,7 @@ export class Repository {
     for (const file of files.filter((file) => file !== ".git")) {
       meta[file] = {
         fileType: "file",
-        link: file,
+        link: `/${this.owner}/${this.name}/blob/main/${file}`,
         lastestCommitMessage: "Not a real commit",
         lastestCommitDate: Date.now(),
         path: file,
@@ -132,7 +140,7 @@ export class Repository {
 
 export async function getOrMountRepo(id: string, data?: Blob) {
   const existingMount = Array.from(fs.mounts.entries()).find(
-    ([name, mount]) => name === `/${id}`,
+    ([name, mount]) => name === `/${id}`
   );
   if (existingMount) {
     try {
@@ -168,7 +176,7 @@ export async function inMemoryStoreToBlob(store: InMemoryStore) {
     Array.from(store.entries()).map(([key, value]) => [
       key.toString(),
       Array.from(value),
-    ]),
+    ])
   );
   return new Blob([json]);
 }
@@ -201,7 +209,7 @@ export class RepoIndex {
     // @ts-ignore
     Blob.prototype.stream = undefined;
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     console.log("existing repo", existingRepo);
@@ -245,7 +253,7 @@ export class RepoIndex {
     {
       for (const prefix of fs.readdirSync(`${newRepo.id}/.git/objects`)) {
         for (const file of fs.readdirSync(
-          `${newRepo.id}/.git/objects/${prefix}`,
+          `${newRepo.id}/.git/objects/${prefix}`
         )) {
           console.log(
             "LOgging file",
@@ -253,7 +261,7 @@ export class RepoIndex {
             file,
             fs
               .readFileSync(`${newRepo.id}/.git/objects/${prefix}/${file}`)
-              .toString(),
+              .toString()
           );
         }
       }
@@ -280,7 +288,7 @@ export class RepoIndex {
 
   getRepo(repo: { owner: string; name: string }) {
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner,
+      (r) => r.name === repo.name && r.owner === repo.owner
     );
 
     if (!existingRepo) {
