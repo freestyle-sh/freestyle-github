@@ -7,7 +7,7 @@ import {
   inMemoryStoreToBlob,
   RepoIndex,
   Repository,
-} from "../../../../cloudstate/simple-repo";
+} from "../../../../../cloudstate/simple-repo";
 import { dirname } from "@zenfs/core/emulation/path.js";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {

@@ -7,8 +7,8 @@ import {
   getOrMountRepo,
   type Repository,
   type RepoIndex,
-} from "../../../../../cloudstate/simple-repo";
-import { CloudStore } from "../../../../../cloudstate/filesystem";
+} from "../../../../../../cloudstate/simple-repo";
+import { CloudStore } from "../../../../../../cloudstate/filesystem";
 import type { APIRoute } from "astro";
 
 // import fs from "node:fs";
