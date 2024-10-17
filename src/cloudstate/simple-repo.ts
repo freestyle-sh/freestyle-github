@@ -49,8 +49,10 @@ export class Repository {
   readonly id: string;
   owner: string;
   name: string;
-  description: string = "";
   data: Blob;
+  description: string;
+  starCount: number;
+  forkCount: number;
 
   constructor({
     owner,
@@ -66,6 +68,8 @@ export class Repository {
     this.name = name;
     this.data = data;
     this.description = `A repository for ${this.owner}/${this.name}`;
+    this.starCount = 0;
+    this.forkCount = 0;
   }
 
   setData({ data }: { data: string }) {
@@ -140,9 +144,11 @@ export async function getOrMountRepo(id: string, data?: Blob) {
   const store = new InMemoryStore();
   if (data) {
     const entries = JSON.parse(await data.text()).map(
-      ([key, value]: [string, any]) => [BigInt(key), new Uint8Array(value)],
+      ([key, value]: [string, number]) => [BigInt(key), new Uint8Array(value)],
     );
-    entries.forEach(([key, value]) => store.set(key, value));
+    for (const [key, value] of entries) {
+      store.set(key, value);
+    }
   }
   const storefs = new StoreFS(store);
   try {
@@ -169,7 +175,7 @@ Response.prototype.arrayBuffer = async function () {
   // console.log(this.constructor.prototype);
   const encoder = new TextEncoder();
   const arrayBuffer = encoder.encode(await this.text()).buffer;
-  return await arrayBuffer;
+  return arrayBuffer;
 };
 
 @cloudstate
@@ -184,8 +190,8 @@ export class RepoIndex {
       name: r.name,
       owner: r.owner,
       description: r.description,
-      starCount: 0,
-      forkCount: 0,
+      starCount: r.starCount,
+      forkCount: r.forkCount,
     }));
   }
 
@@ -223,7 +229,7 @@ export class RepoIndex {
       checkout: true,
     });
 
-    fs.writeFileSync(`/${newRepo.id}` + "/test.txt", "test");
+    fs.writeFileSync(`/${newRepo.id}/test.txt`, "test");
 
     console.log(fs.readdirSync(`/${newRepo.id}`));
 
@@ -268,137 +274,6 @@ export class RepoIndex {
       description: existingRepo.description,
       starCount: 0,
       forkCount: 0,
-    };
-  }
-}
-
-@cloudstate
-export class SimpleRepo {
-  static readonly id = "simple-repo";
-  name = "Simple-Repo".toLowerCase();
-  description = "A simple repo that stores a simple codebase";
-  link: string | undefined = "https://www.freestyle.sh";
-  codebase = {
-    filename: "simple-repo.ts",
-  };
-  starCount = 0;
-  forkCount = 0;
-
-  getInfo(): RepoMetadata {
-    return {
-      name: this.name,
-      description: this.description,
-      link: this.link,
-      starCount: this.starCount,
-      forkCount: this.forkCount,
-    };
-  }
-
-  getLatestCodebaseMetadata(): CodebaseMetadata {
-    return {
-      latestCommit: {
-        author: {
-          username: "kevgug",
-          avatar: "https://avatars.githubusercontent.com/u/37193648?v=4",
-        },
-        message: "Initial commit",
-        date: Date.now(),
-        shortHash: "123456",
-      },
-      totalCommits: 1,
-      files: {},
-      // files: {
-      //   "filename.ts": {
-      //     fileType: "file",
-      //     // link: this.link+"/"
-      //     lastestCommitMessage: "Initial commit",
-      //     lastestCommitDate: Date.now(),
-      //   },
-      //   "package.json": {
-      //     fileType: "file",
-      //     lastestCommitMessage: "Initial commit",
-      //     lastestCommitDate: Date.now(),
-      //   },
-      //   "package-lock.json": {
-      //     fileType: "file",
-      //     lastestCommitMessage: "Initial commit",
-      //     lastestCommitDate: Date.now(),
-      //   },
-      //   "slambam.c": {
-      //     fileType: "file",
-      //     lastestCommitMessage: "Initial commit",
-      //     lastestCommitDate: Date.now(),
-      //   },
-      //   'pnpm-lock.yaml': {
-      //     fileType: 'file',
-      //     lastestCommitMessage: 'Initial commit',
-      //     lastestCommitDate: Date.now(),
-      //   },
-      //   src: {
-      //     fileType: "dir",
-      //     lastestCommitMessage:
-      //       "Initial commitafgasdgsdg this one is super long and will not be allowed to go to two lines god damn you",
-      //     lastestCommitDate: Date.now(),
-      //     children: {
-      //       cloudstate: {
-      //         fileType: "dir",
-      //         lastestCommitMessage: "Initial commit",
-      //         lastestCommitDate: Date.now(),
-      //         children: {
-      //           "simple-repo.ts": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //         },
-      //       },
-      //       components: {
-      //         fileType: "dir",
-      //         lastestCommitMessage: "Initial commit",
-      //         lastestCommitDate: Date.now(),
-      //         children: {
-      //           "RepoBar.tsx": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //           "RepoSidebar.tsx": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //           "CodeBar.tsx": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //           "FileRow.tsx": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //           "CodebaseViewer.tsx": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //         },
-      //       },
-      //       lib: {
-      //         fileType: "dir",
-      //         lastestCommitMessage: "Initial commit",
-      //         lastestCommitDate: Date.now(),
-      //         children: {
-      //           "icon-map.ts": {
-      //             fileType: "file",
-      //             lastestCommitMessage: "Initial commit",
-      //             lastestCommitDate: Date.now(),
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
     };
   }
 }

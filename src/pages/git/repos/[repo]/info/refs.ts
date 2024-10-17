@@ -5,8 +5,7 @@ import { fs } from "@zenfs/core";
 import { useCloud } from "freestyle-sh";
 import {
   getOrMountRepo,
-  Repository,
-  SimpleRepo,
+  type Repository,
   type RepoIndex,
 } from "../../../../../cloudstate/simple-repo";
 import { CloudStore } from "../../../../../cloudstate/filesystem";
