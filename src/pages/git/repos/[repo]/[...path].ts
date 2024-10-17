@@ -42,7 +42,11 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     return new Response(null, { status: 404 });
   }
 
-  fs.umount(`/${repo.id}`);
+  try {
+    fs.umount(`/${repo.id}`);
+  } catch (e) {
+    console.warn("Failed to unmount", e);
+  }
   return new Response(file);
 }
 
