@@ -20,7 +20,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   const data = await useCloud<typeof Repository>(repo.id).getData();
   await getOrMountRepo(repo.id, new Blob([data.data]));
 
-  let file: Buffer | null = null;
+  let file: Uint8Array | null = null;
 
   try {
     // console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/${params.split('')}`), params.path);
@@ -33,11 +33,9 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     return new Response(null, { status: 404 });
   }
 
-  return new Response(file.buffer, {
-    headers: {
-      "Content-Type": "application/octet-stream",
-    },
-  });
+  fs.umount(`/${repo.id}`);
+  return new Response(file);
+
 }
 
 // Tells Git that the server supports locking

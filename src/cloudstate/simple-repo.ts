@@ -198,6 +198,7 @@ export class RepoIndex {
   }
 
   async createRepo(repo: { owner: string; name: string }) {
+    Blob.prototype.stream = undefined;
     const existingRepo = Array.from(this.repos.values()).find(
       (r) => r.name === repo.name && r.owner === repo.owner
     );
@@ -246,6 +247,7 @@ export class RepoIndex {
           `${newRepo.id}/.git/objects/${prefix}`
         )) {
           console.log(
+            "LOgging file",
             prefix,
             file,
             fs
