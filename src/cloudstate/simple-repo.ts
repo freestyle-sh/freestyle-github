@@ -24,6 +24,7 @@ export type CodebaseMetadata = {
   };
   totalCommits: number;
   files: FileSystemMetadata;
+  readme?: string;
 };
 
 export interface FileSystemMetadata {
@@ -36,6 +37,7 @@ export type FileMetadata = {
   link: string;
   lastestCommitMessage: string;
   lastestCommitDate: number;
+  path: string;
 } & (
   | {
       fileType: "dir";
@@ -112,30 +114,57 @@ export class Repository {
 
     const meta: FileSystemMetadata = {};
 
+    const logs = await git.log({
+      fs,
+      dir: `/${this.id}`,
+      ref: "main",
+    });
+
+    let readme = undefined;
+    try {
+      readme = fs.readFileSync(`/${this.id}/README.md`).toString();
+    } catch (e) {
+      console.log(e);
+      readme = undefined;
+    }
+
+    console.log("readme", readme);
+
     for (const file of files.filter((file) => file !== ".git")) {
+      const log = await git
+        .log({
+          fs,
+          dir: `/${this.id}`,
+          ref: "main",
+          filepath: file,
+        })
+        .then((logs) => logs.at(-1)!);
+
       meta[file] = {
         fileType: "file",
         link: `/${this.owner}/${this.name}/blob/main/${file}`,
-        lastestCommitMessage: "Not a real commit",
-        lastestCommitDate: Date.now(),
+        lastestCommitMessage: log.commit.message,
+        lastestCommitDate: log.commit.committer.timestamp * 1000,
         path: file,
       };
     }
 
-    console.log("meta", meta);
+    console.log(meta);
 
+    const lastCommit = logs.at(-1)!;
     return {
       latestCommit: {
         author: {
-          username: "JacobZwang",
-          avatar: "https://avatars.githubusercontent.com/u/37193648?v=4",
+          username: lastCommit.commit.author.name,
+          avatar: "https://picsum.photos/id/1015/200/200",
         },
-        message: "Not a real commit",
-        date: Date.now(),
-        shortHash: "123456",
+        message: lastCommit.commit.message,
+        date: lastCommit.commit.committer.timestamp * 1000,
+        shortHash: lastCommit.oid.slice(0, 7),
       },
-      totalCommits: 1,
+      totalCommits: logs.length,
       files: meta,
+      readme: readme,
     };
   }
 }
@@ -244,13 +273,16 @@ export class RepoIndex {
       checkout: true,
     });
 
-    fs.writeFileSync(`/${newRepo.id}/test.txt`, "test");
+    fs.writeFileSync(
+      `/${newRepo.id}/README.md`,
+      `# ${newRepo.name}\n\n${newRepo.description}`
+    );
     console.log("wrote file");
 
     await git.add({
       fs,
       dir: `/${newRepo.id}`,
-      filepath: "test.txt",
+      filepath: "README.md",
     });
 
     {

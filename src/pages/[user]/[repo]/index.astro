@@ -3,6 +3,8 @@ import Layout from "../../../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
 import { RepoIndex, Repository } from "../../../cloudstate/simple-repo";
 import { RepoLayout } from "../../../layouts/Repo";
+import { Markdown } from "../../../components/Markdown";
+import { fade } from "astro:transitions";
 
 const index = useCloud<typeof RepoIndex>("repo-index");
 
@@ -25,5 +27,11 @@ const codeMeta = await simpleRepo.getLatestCodebaseMetadata();
 ---
 
 <Layout title="Freestyle.sh Project">
-  <RepoLayout client:load repoMetadata={repoInfo} codeMetadata={codeMeta} />
+  <RepoLayout client:load repoMetadata={repoInfo} codeMetadata={codeMeta}>
+    <Markdown
+      value={codeMeta.readme!}
+      client:only="react"
+      slot="markdown-viewer"
+    />
+  </RepoLayout>
 </Layout>
