@@ -32,6 +32,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
     // try {
     //     fs.umount(`/${params.repo}`);
     // } catch (e) {}
+    console.error(e, "in GET");
     return new Response(null, { status: 404 });
   }
 
@@ -118,23 +119,26 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   // Put the contents of the body into params.path
   console.log("PUT", params);
 
-  const id = await useCloud<typeof RepoIndex>("repo-index").getRepo({
+  if (!params.repo || !params.path) {
+    return new Response(null, { status: 404 });
+  }
+
+  const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
     owner: "JacobZwang",
-    name: params.repo!,
+    name: params.repo,
   });
 
-  const repo = useCloud<typeof Repository>(id.id);
+  const repo = useCloud<typeof Repository>(id);
   const data = await repo.getData();
 
-  const store = await getOrMountRepo(id.id, new Blob([data.data]));
+  const store = await getOrMountRepo(id, new Blob([data.data]));
 
-
-  if (fs.mounts.get(`/${params.repo}`)) {
-    fs.umount(`/${params.repo}`);
+  if (fs.mounts.get(`/${id}`)) {
+    fs.umount(`/${id}`);
   }
-  fs.mount(`/${params.repo}`, new StoreFS(store));
+  fs.mount(`/${id}`, new StoreFS(store));
 
-  const file = `${params.repo}/.git/${params.path}`;
+  const file = `${id}/.git/${params.path}`;
   const parent = dirname(file);
 
   try {
@@ -142,10 +146,11 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
 
     fs.writeFileSync(file, await request.text());
   } catch (e) {
+    console.error(e, "in PUT");
     return new Response(null, { status: 404 });
   }
 
-  fs.umount(`/${params.repo}`);
+  fs.umount(`/${id}`);
 
   return new Response();
 }
