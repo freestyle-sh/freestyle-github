@@ -1,6 +1,7 @@
-import { cloudstate } from "freestyle-sh";
+import { cloudstate, useLocal } from "freestyle-sh";
 import { fs, InMemoryStore, StoreFS, umount } from "@zenfs/core";
 import git from "isomorphic-git";
+import type { AuthCS } from "./auth";
 
 export interface RepoMetadata {
   id: string;
@@ -62,16 +63,18 @@ export class Repository {
     owner,
     name,
     data,
+    description,
   }: {
     owner: string;
     name: string;
     data: Blob;
+    description: string;
   }) {
     this.id = crypto.randomUUID();
     this.owner = owner;
     this.name = name;
     this.data = data;
-    this.description = `A repository for ${this.owner}/${this.name}`;
+    this.description = description;
     this.starCount = 0;
     this.forkCount = 0;
   }
@@ -237,11 +240,18 @@ export class RepoIndex {
     }));
   }
 
-  async createRepo(repo: { owner: string; name: string }) {
+  async createRepo(repo: { name: string; description: string }) {
+    const owner = useLocal<typeof AuthCS>("auth").getUserInfo()?.username;
+    if (!owner) {
+      throw new Error("No user logged in");
+    }
+
+    console.log("creating repo", owner + "/" + repo.name);
+
     // @ts-ignore
     Blob.prototype.stream = undefined;
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === owner
     );
 
     console.log("existing repo", existingRepo);
@@ -251,9 +261,10 @@ export class RepoIndex {
     }
 
     const newRepo = new Repository({
-      owner: repo.owner,
+      owner: owner,
       name: repo.name,
       data: new Blob(),
+      description: repo.description,
     });
     this.repos.set(newRepo.id, newRepo);
 
@@ -307,8 +318,8 @@ export class RepoIndex {
       dir: `/${newRepo.id}`,
       message: "first commit",
       author: {
-        name: "Jacob Zwang",
-        email: "59858341+JacobZwang@users.noreply.github.com",
+        name: useLocal<typeof AuthCS>("auth").getUserInfo()?.username,
+        email: useLocal<typeof AuthCS>("auth").getUserInfo()?.username,
       },
     });
 
@@ -321,9 +332,16 @@ export class RepoIndex {
     return { id: newRepo.id };
   }
 
-  getRepo(repo: { owner: string; name: string }): RepoMetadata {
+  getRepo(repo: { name: string }): RepoMetadata {
+    const owner = useLocal<typeof AuthCS>("auth").getUserInfo()?.username;
+    if (!owner) {
+      throw new Error("No user logged in");
+    }
+
+    console.log(owner, repo);
+
     const existingRepo = Array.from(this.repos.values()).find(
-      (r) => r.name === repo.name && r.owner === repo.owner
+      (r) => r.name === repo.name && r.owner === owner
     );
 
     if (!existingRepo) {

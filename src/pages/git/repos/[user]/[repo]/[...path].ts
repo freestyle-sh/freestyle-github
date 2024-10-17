@@ -14,7 +14,7 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   console.log("GET", params);
 
   const repo = await useCloud<typeof RepoIndex>("repo-index").getRepo({
-    owner: "JacobZwang",
+    owner: params.user!,
     name: params.repo!,
   });
 

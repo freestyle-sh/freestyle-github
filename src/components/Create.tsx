@@ -5,6 +5,8 @@ import { useCloud } from "freestyle-sh";
 import type { RepoIndex } from "../cloudstate/simple-repo";
 import Avatar from "./Avatar";
 import IconInfo from "./icons/Info";
+import { useCloudQuery } from "freestyle-sh/react";
+import type { AuthCS } from "../cloudstate/auth";
 
 export const CreateRepo = (props: { nameInspo: string }) => {
   const [repoName, setRepoName] = React.useState("");
@@ -19,6 +21,9 @@ export const CreateRepo = (props: { nameInspo: string }) => {
     }
   }, [repoName]);
 
+  const auth = useCloud<typeof AuthCS>("auth");
+  const { data: user } = useCloudQuery(auth.getUserInfo);
+
   return (
     <div className="py-8 px-4 flex flex-row justify-center items-center w-full text-gray-100 text-sm">
       <form
@@ -29,11 +34,10 @@ export const CreateRepo = (props: { nameInspo: string }) => {
             await useCloud<typeof RepoIndex>("repo-index")
               .createRepo({
                 name: repoName,
-                owner: "JacobZwang", //TODO: HOOK IN KEVIN AUTH AND NOT PASS FROM FRONTEND
                 description: repoDescription,
               })
               .then((repoId) => {
-                window.location.href = `/JacobZwang/${repoName}`;
+                window.location.href = `/${user?.username}/${repoName}`;
               });
           }
         }}
@@ -63,7 +67,7 @@ export const CreateRepo = (props: { nameInspo: string }) => {
                 src="https://avatars.githubusercontent.com/u/7749131?v=4"
                 alt=""
               />
-              JacobZwang
+              {user?.username}
             </Button>
           </label>
           <p className="text-[1.75rem] font-light mb-2">/</p>
