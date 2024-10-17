@@ -1,6 +1,7 @@
 import fs, { InMemoryStore, StoreFS } from "@zenfs/core";
 import type { APIRoute } from "astro";
 import { useCloud } from "freestyle-sh";
+import zlib from 'node:zlib';
 import {
   getOrMountRepo,
   RepoIndex,
@@ -10,8 +11,6 @@ import { dirname } from "@zenfs/core/emulation/path.js";
 
 export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   console.log("getting file");
-
-  // console.log("PARAMS REPO", params.repo);  
 
   const repo = await useCloud<typeof RepoIndex>("repo-index").getRepo({
     owner: "JacobZwang",
@@ -24,23 +23,21 @@ export async function GET({ params, request }: Parameters<APIRoute>[0]) {
   let file: Buffer | null = null;
 
   try {
-    console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/`), params.path);
+    // console.log("REPO FILES", fs.readdirSync(`/${repo.id}/.git/${params.split('')}`), params.path);
     file = fs.readFileSync(`${repo.id}/.git/${params.path}`);
-    console.log("FILE IS", file);
+    console.log(`File @ ${params.path} is`, file);
+    
   } catch (e) {
-    console.log("FAILED TO READ FILE", e.message);
-    // try {
-    //     fs.umount(`/${params.repo}`);
-    // } catch (e) {}
-    console.error(e, "in GET");
+    console.log("failed to read file", `${repo.id}/.git/${params.path}`);
+
     return new Response(null, { status: 404 });
   }
 
-  //   try {
-  //       fs.umount(`/${params.repo}`);
-  //     } catch (e) {}
-
-  return new Response(file.buffer);
+  return new Response(file.buffer, {
+    headers: {
+      "Content-Type": "application/octet-stream",
+    },
+  });
 }
 
 // Tells Git that the server supports locking

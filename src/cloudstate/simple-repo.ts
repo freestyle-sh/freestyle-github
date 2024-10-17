@@ -232,8 +232,7 @@ export class RepoIndex {
     });
 
     fs.writeFileSync(`/${newRepo.id}/test.txt`, "test");
-
-    console.log(fs.readdirSync(`/${newRepo.id}`));
+    console.log("wrote file");
 
     await git.add({
       fs,
@@ -257,7 +256,7 @@ export class RepoIndex {
       }
     }
 
-    await git.commit({
+    const commit = await git.commit({
       fs,
       dir: `/${newRepo.id}`,
       message: "first commit",
@@ -267,7 +266,7 @@ export class RepoIndex {
       },
     });
 
-    console.log("committed");
+    console.log("commit", commit);
 
     const blob = await inMemoryStoreToBlob(store);
 
