@@ -3,7 +3,9 @@ import { fs, InMemoryStore, StoreFS, umount } from "@zenfs/core";
 import git from "isomorphic-git";
 
 export interface RepoMetadata {
+  id: string;
   name: string;
+  owner: string;
   description: string;
   link?: string;
   starCount: number;
@@ -287,7 +289,7 @@ export class RepoIndex {
     return { id: newRepo.id };
   }
 
-  getRepo(repo: { owner: string; name: string }) {
+  getRepo(repo: { owner: string; name: string }): RepoMetadata {
     const existingRepo = Array.from(this.repos.values()).find(
       (r) => r.name === repo.name && r.owner === repo.owner
     );

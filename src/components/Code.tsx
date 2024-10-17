@@ -1,10 +1,10 @@
-export default function IconCode() {
+export default function IconCode(props: { size: number }= { size: 16 }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 16 16"
-      width="16"
-      height="16"
+      width={props.size}
+      height={props.size}
     >
       <path
         fill="currentColor"

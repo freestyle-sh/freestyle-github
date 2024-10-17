@@ -18,7 +18,7 @@ export function RepoLayout(props: {
       <RepoBar repoMetadata={repoMetadata} />
       <div className="grid grid-cols-1 sm:grid-cols-[2fr,1fr] w-full h-full px-6 sm:px-12 py-4">
         <div className="mb-8 sm:mb-0 sm:pr-4">
-          <CodeBar />
+          <CodeBar repoMetadata={repoMetadata} />
           <div className="mt-4" />
           <CodebaseViewer codeMetadata={codeMetadata} />
         </div>
