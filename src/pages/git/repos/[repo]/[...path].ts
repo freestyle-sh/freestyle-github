@@ -140,11 +140,6 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
 
   const store = await getOrMountRepo(id, new Blob([data.data]));
 
-  if (fs.mounts.get(`/${id}`)) {
-    fs.umount(`/${id}`);
-  }
-  fs.mount(`/${id}`, new StoreFS(store));
-
   const file = `${id}/.git/${params.path}`;
   const parent = dirname(file);
 
@@ -175,8 +170,6 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
     console.warn("Failed to unmount", e);
   }
 
-  store.sync();
-
   return new Response();
 }
 
@@ -187,7 +180,71 @@ export async function HEAD({ params, request }: Parameters<APIRoute>[0]) {
 
 export async function MOVE({ params, request }: Parameters<APIRoute>[0]) {
   // TODO: Figure out what this is supposed to do
-  console.log("MOVE", params, "text", await request.blob());
+  console.log("MOVE", params, "text", request);
+
+  if (!params.repo || !params.path) {
+    return new Response(null, { status: 404 });
+  }
+
+  const { id, name } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
+    owner: "JacobZwang",
+    name: params.repo,
+  });
+
+  const repo = useCloud<typeof Repository>(id);
+  const data = await repo.getData();
+
+  const store = await getOrMountRepo(id, new Blob([data.data]));
+
+  try {
+    // const destUrl = request.headers.get("destination");
+    // if (!destUrl) {
+    //   console.error("No destination in MOVE");
+    //   return new Response(null, { status: 404 });
+    // }
+
+    // const dest = new URL(destUrl).pathname.replace(`/git/repos/${name}`, "");
+    //
+    // console.log("MOVE", dest);
+    //
+    // // const file = `/${id}/.git/${params.path}`;
+    // const file = `/${id}/.git/${dest}`;
+    //
+    // const data = fs.readFileSync(file);
+
+    // console.log("1");
+    // fs.mkdirSync(dirname(`/${id}/.git/objects/${dest}`), { recursive: true });
+    // console.log("2");
+    const data = await request.text();
+
+    console.log("1");
+    fs.mkdirSync(dirname(`/${id}/.git/${params.path}`), { recursive: true });
+    console.log("2");
+
+    fs.writeFileSync(`/${id}/.git/${params.path}`, data);
+    console.log("3");
+  } catch (e) {
+    console.error("Failed to MOVE", e);
+    return new Response(null, { status: 404 });
+  }
+
+  // store.sync();
+
+  // repo.setData = blob;
+  await repo.setData({
+    data: JSON.stringify(
+      Array.from(store.entries()).map(([key, value]) => [
+        key.toString(),
+        Array.from(value),
+      ])
+    ),
+  });
+
+  // try {
+  //   fs.umount(`/${id}`);
+  // } catch (e) {
+  //   console.warn("Failed to unmount", e);
+  // }
 
   return new Response();
 }
