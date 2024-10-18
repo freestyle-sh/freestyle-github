@@ -7,9 +7,12 @@ import {
   GitFork,
   Calendar,
 } from "lucide-react";
+import Button from "./Button";
+import { CreateRepoButton } from "./CreateRepoButton";
+import { SignOutButton } from "./SignOutButton";
 
 export function AccountPage(props: {
-  user: { username: string };
+  user: { username: string; isSelf: boolean };
   repos: { id: string; name: string; description: string }[];
 }) {
   return (
@@ -55,7 +58,10 @@ export function AccountPage(props: {
             </div> */}
 
             {/* Popular repositories */}
-            <h2 className="text-xl font-semibold mb-4">Repositories</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Repositories</h2>
+              <CreateRepoButton />
+            </div>
             <div className="grid gap-4 md:grid-cols-2">
               {props.repos.map((repo) => (
                 <div
@@ -89,11 +95,16 @@ export function AccountPage(props: {
                 </div>
               ))}
             </div>
+            {props.user.isSelf && (
+              <div className="mt-4">
+                <SignOutButton />
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
-          {/* <div className="w-full md:w-1/3">
-            <div className="border border-gray-700 rounded-lg p-6">
+          <div className="w-full md:w-1/3">
+            {/* <div className="border border-gray-700 rounded-lg p-6">
               <ul className="space-y-4">
                 <li className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-gray-400" />
@@ -119,7 +130,7 @@ export function AccountPage(props: {
               </ul>
             </div> */}
 
-          {/* <h3 className="font-semibold mt-6 mb-2">Organizations</h3>
+            {/* <h3 className="font-semibold mt-6 mb-2">Organizations</h3>
             <div className="flex flex-wrap gap-2">
               {[1, 2, 3].map((org) => (
                 <img
@@ -144,7 +155,7 @@ export function AccountPage(props: {
                 )
               )}
             </div> */}
-          {/* </div> */}
+          </div>
         </div>
       </div>
     </div>

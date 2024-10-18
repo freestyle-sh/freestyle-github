@@ -7,9 +7,7 @@ export const RepoSidebar = (props: { repoMetadata: RepoMetadata }) => {
   return (
     <div>
       <h2 className="font-bold mb-4">About</h2>
-      <p className="mb-4">
-        {repoMetadata.description} | {repoMetadata.link}
-      </p>
+      <p className="mb-4">{repoMetadata.description || "No description"}</p>
       {repoMetadata.link ? (
         <>
           <div className="flex flex-row fill-white items-center">

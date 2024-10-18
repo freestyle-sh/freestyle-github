@@ -15,13 +15,16 @@ export const CodebaseViewer = (props: { codeMetadata: CodebaseMetadata }) => {
             <a href={`/${codeMetadata.latestCommit.author.username}`}>
               <Avatar
                 src={codeMetadata.latestCommit.author.avatar}
-                alt="kevgug"
+                alt={codeMetadata.latestCommit.author.username}
               />
             </a>
           </div>
-          <div className="text-gray-100 font-bold hover:underline cursor-pointer">
+          <a
+            className="text-gray-100 font-bold hover:underline cursor-pointer"
+            href={`/${codeMetadata.latestCommit.author.username}`}
+          >
             {codeMetadata.latestCommit.author.username}
-          </div>
+          </a>
         </div>
         <div className="text-gray-400 hover:text-blue-500 hover:underline cursor-pointer">
           {codeMetadata.latestCommit.message}

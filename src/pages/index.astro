@@ -2,7 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import { useCloud } from "freestyle-sh";
 import { RepoIndex } from "../cloudstate/simple-repo";
-import { RepoLayout } from "../layouts/Repo.tsx";
 import type { AuthCS } from "../cloudstate/auth";
 import { SignOutButton } from "../components/SignOutButton";
 import { CreateRepoButton } from "../components/CreateRepoButton";
@@ -14,28 +13,8 @@ const repos = (await repoIndex.listRepos()) ?? [];
 
 const usr = await auth.getUserInfo().catch(() => null);
 if (!usr) {
-	return Astro.redirect("/signin");
+  return Astro.redirect("/signin");
+} else {
+  return Astro.redirect(`/${usr.username}`);
 }
 ---
-
-<Layout title="Home">
-  <div class="flex items-center justify-center h-screen w-full">
-    <div class="flex flex-col">
-      {
-        repos.map((repo) => (
-          <a
-            href={`/${repo.owner}/${repo.name}`}
-            class="p-2 w-full hover:bg-white/10 transition-all rounded-lg"
-          >
-            {repo.name}
-          </a>
-        ))
-      }
-            <div class="h-4 block"></div>
-
-      <CreateRepoButton client:load />
-      <div class="h-4 block"></div>
-      <SignOutButton client:load />
-    </div>
-  </div>
-</Layout>
