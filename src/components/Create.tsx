@@ -30,7 +30,7 @@ export const CreateRepo = (props: { nameInspo: string }) => {
         className="flex flex-col mx-8 sm:max-w-[50%]"
         onSubmit={async (e) => {
           e.preventDefault();
-          if (repoName !== "" && repoDescription !== "") {
+          if (isFormValid) {
             await useCloud<typeof RepoIndex>("repo-index")
               .createRepo({
                 name: repoName,
