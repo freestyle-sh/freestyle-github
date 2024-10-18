@@ -26,15 +26,11 @@ export const CodebaseViewer = (props: { codeMetadata: CodebaseMetadata }) => {
             {codeMetadata.latestCommit.author.username}
           </a>
         </div>
-        <div className="text-gray-400 hover:text-blue-500 hover:underline cursor-pointer">
-          {codeMetadata.latestCommit.message}
-        </div>
+        <div className="text-gray-400">{codeMetadata.latestCommit.message}</div>
       </div>
       <div className="text-gray-400 text-xs">
-        <span className="hover:text-blue-500 hover:underline cursor-pointer">
-          {codeMetadata.latestCommit.shortHash}
-        </span>{" "}
-        • {format(codeMetadata.latestCommit.date)}
+        <span>{codeMetadata.latestCommit.shortHash}</span> •{" "}
+        {format(codeMetadata.latestCommit.date)}
       </div>
     </FileSystemViewer>
   );

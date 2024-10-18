@@ -1,7 +1,8 @@
-import { cloudstate, useLocal } from "freestyle-sh";
+import { cloudstate, invalidate, useCloud, useLocal } from "freestyle-sh";
 import { fs, InMemoryStore, StoreFS, umount } from "@zenfs/core";
 import git from "isomorphic-git";
 import type { AuthCS } from "./auth";
+import type { UserCS } from "./user";
 
 export interface RepoMetadata {
   id: string;
@@ -10,7 +11,7 @@ export interface RepoMetadata {
   description: string;
   link?: string;
   starCount: number;
-  forkCount: number;
+  // forkCount: number;
 }
 
 export type CodebaseMetadata = {
@@ -56,8 +57,7 @@ export class Repository {
   name: string;
   data: Blob;
   description: string;
-  starCount: number;
-  forkCount: number;
+  stars: UserCS[] = [];
 
   constructor({
     owner,
@@ -75,8 +75,6 @@ export class Repository {
     this.name = name;
     this.data = data;
     this.description = description;
-    this.starCount = 0;
-    this.forkCount = 0;
   }
 
   setData({ data }: { data: string }) {
@@ -95,6 +93,38 @@ export class Repository {
   async getData() {
     console.log("getting data");
     return { data: await this.data.text() };
+  }
+
+  star() {
+    invalidate(useCloud<typeof Repository>(this.id).getPublicInfo);
+    if (
+      !this.stars.some(
+        (user) =>
+          user.id === useLocal<typeof AuthCS>("auth").getCurrentUser()?.id
+      )
+    ) {
+      this.stars.push(useLocal<typeof AuthCS>("auth").getDefiniteCurrentUser());
+      return true;
+    } else {
+      this.stars = this.stars.filter(
+        (user) =>
+          user.id !== useLocal<typeof AuthCS>("auth").getCurrentUser()?.id
+      );
+      return false;
+    }
+  }
+
+  currentUserStarred() {
+    return this.stars.some(
+      (star) => star.id === useLocal<typeof AuthCS>("auth").getCurrentUser()?.id
+    );
+  }
+
+  getPublicInfo() {
+    return {
+      starCount: this.stars.length,
+      currentUserStarred: this.currentUserStarred(),
+    };
   }
 
   async getLatestCodebaseMetadata(): Promise<CodebaseMetadata> {
@@ -232,8 +262,8 @@ export class RepoIndex {
       name: r.name,
       owner: r.owner,
       description: r.description,
-      starCount: r.starCount,
-      forkCount: r.forkCount,
+      starCount: r.stars.length,
+      // forkCount: r.forkCount,
     }));
   }
 
@@ -350,8 +380,8 @@ export class RepoIndex {
       name: existingRepo.name,
       owner: existingRepo.owner,
       description: existingRepo.description,
-      starCount: existingRepo.starCount,
-      forkCount: existingRepo.forkCount,
+      starCount: existingRepo.stars.length,
+      // forkCount: existingRepo.forkCount,
     };
   }
 }
