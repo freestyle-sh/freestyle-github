@@ -12,10 +12,12 @@ export const CodebaseViewer = (props: { codeMetadata: CodebaseMetadata }) => {
       <div className="flex flex-row gap-2.5 items-center">
         <div className="flex flex-row gap-2 items-center">
           <div className="cursor-pointer">
-            <Avatar
-              src={codeMetadata.latestCommit.author.avatar}
-              alt="kevgug"
-            />
+            <a href={`/${codeMetadata.latestCommit.author.username}`}>
+              <Avatar
+                src={codeMetadata.latestCommit.author.avatar}
+                alt="kevgug"
+              />
+            </a>
           </div>
           <div className="text-gray-100 font-bold hover:underline cursor-pointer">
             {codeMetadata.latestCommit.author.username}

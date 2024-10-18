@@ -75,4 +75,10 @@ export class AuthCS extends PasskeyAuthentication {
   getUserInfo() {
     return this.getCurrentUser()?.getInfo();
   }
+
+  getUserInfoByUsername(username: string) {
+    return Array.from(this.usersById.values())
+      .find((user) => user.username === username)
+      ?.getInfo();
+  }
 }

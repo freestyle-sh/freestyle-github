@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { useCloud } from "freestyle-sh";
+import { RepoIndex } from "../../cloudstate/simple-repo";
+import type { AuthCS } from "../../cloudstate/auth";
+import { AccountPage } from "../../components/AccountPage";
+
+const auth = useCloud<typeof AuthCS>("auth");
+const user = await auth.getUserInfoByUsername(Astro.params.user!);
+
+const repoIndex = useCloud<typeof RepoIndex>("repo-index");
+const repos = (await repoIndex.listRepos()) ?? [];
+
+---
+
+<Layout title={Astro.params.user}>
+  <AccountPage client:load user={user} repos={repos} />
+</Layout>

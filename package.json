@@ -30,6 +30,7 @@
     "freestyle-deno-astro-adapter": "^5.0.4",
     "freestyle-sh": "^0.2.35",
     "isomorphic-git": "^1.27.1",
+    "lucide-react": "^0.453.0",
     "material-file-icons": "^2.4.0",
     "nanostores": "^0.10.3",
     "prismjs": "^1.29.0",
