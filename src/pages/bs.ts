@@ -13,8 +13,8 @@ export const GET = async ({ params, request }: Parameters<APIRoute>[0]) => {
     JSON.stringify(
       await repoIndex
         .getRepo({
-          owner: "JacobZwang",
-          name: "bs",
+          owner: "bas",
+          name: "bas",
         })
         .then(async (repo) => {
           console.log(repo);
@@ -22,11 +22,16 @@ export const GET = async ({ params, request }: Parameters<APIRoute>[0]) => {
           const repository = useCloud<typeof Repository>(repo.id);
           const data = await repository.getData();
           const mounted = await getOrMountRepo(repo.id, new Blob([data.data]));
-          const files = fs.readFileSync(
-            `/ca9821ce-32d8-478f-822d-9bee7cb02351/.git/objects/60/e5a64c402b13e887d1616932a49150046d81a3`,
-            {},
-          );
-          console.log("FILES", files);
+          // print all files in the repo
+        let files = fs.readdirSync('/');
+        while (files.length) {
+            const file: string = files.pop() as string;
+            console.log(file);
+            if (fs.statSync(file).isDirectory()) {
+                fs.readdirSync(file).forEach((f) => files.push(`${file}/${f}`));
+            }
+        }
+        
 
           return repo;
         }),

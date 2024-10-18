@@ -359,8 +359,9 @@ export class RepoIndex {
     return { id: newRepo.id };
   }
 
-  getRepo(repo: { name: string }): RepoMetadata {
-    const owner = useLocal<typeof AuthCS>("auth").getUserInfo()?.username;
+  getRepo(repo: { name: string, owner: string}): RepoMetadata {
+    // const owner = useLocal<typeof AuthCS>("auth").getUserInfo()?.username;
+    const owner = repo.owner;
     if (!owner) {
       throw new Error("No user logged in");
     }
