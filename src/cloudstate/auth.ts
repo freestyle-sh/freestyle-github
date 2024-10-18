@@ -41,7 +41,9 @@ export class AuthCS extends PasskeyAuthentication {
   }
   override async finishRegistration(passkey: FinishPasskeyRegistrationJSON) {
     const info = await super.finishRegistration(passkey);
-    const avatar = createAvatar(identicon);
+    const avatar = createAvatar(identicon, {
+      seed: info.username,
+    });
     const avatarBlob = new Blob([avatar.toJson().svg], {
       type: "image/svg+xml",
     });

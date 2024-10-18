@@ -12,7 +12,7 @@ import { CreateRepoButton } from "./CreateRepoButton";
 import { SignOutButton } from "./SignOutButton";
 
 export function AccountPage(props: {
-  user: { username: string; isSelf: boolean };
+  user: { username: string; isSelf: boolean, avatarUrl: string };
   repos: { id: string; name: string; description: string }[];
 }) {
   return (
@@ -24,7 +24,7 @@ export function AccountPage(props: {
             {/* Profile header */}
             <div className="flex items-center gap-4 mb-8">
               <img
-                src="https://picsum.photos/id/1015/96/96"
+                src={props.user.avatarUrl}
                 alt={`@${props.user.username}`}
                 className="w-24 h-24 rounded-full"
               />
