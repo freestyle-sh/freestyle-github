@@ -70,7 +70,7 @@ export async function PROPFIND({
       </D:prop>
     </D:propstat>
   </D:response>
-</D:multistatus>`
+</D:multistatus>`,
   );
 }
 
@@ -91,7 +91,7 @@ export async function MKCOL({ params, request }: Parameters<APIRoute>[0]) {
           </D:prop>
         </D:propstat>
       </D:response>
-    </D:multistatus>`
+    </D:multistatus>`,
   );
 }
 
@@ -118,7 +118,7 @@ export async function LOCK({ params, request }: Parameters<APIRoute>[0]) {
           </D:activelock>
         </D:lockdiscovery>
       </D:prop>
-`
+`,
   );
 }
 
@@ -155,19 +155,14 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
 
   // store.sync();
 
-  const output = await inMemoryStoreToBlob(store);
-
-  // repo.setDataRaw(output);
-
-  // repo.setData = blob;
-  // await repo.setData({
-  //   data: JSON.stringify(
-  //     Array.from(store.entries()).map(([key, value]) => [
-  //       key.toString(),
-  //       Array.from(value),
-  //     ])
-  //   ),
-  // });
+  await repo.setData({
+    data: JSON.stringify(
+      Array.from(store.entries()).map(([key, value]) => [
+        key.toString(),
+        Array.from(value),
+      ]),
+    ),
+  });
 
   // try {
   //   fs.umount(`/${id}`);
@@ -241,7 +236,7 @@ export async function MOVE({ params, request }: Parameters<APIRoute>[0]) {
       Array.from(store.entries()).map(([key, value]) => [
         key.toString(),
         Array.from(value),
-      ])
+      ]),
     ),
   });
 
