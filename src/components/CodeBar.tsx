@@ -50,11 +50,11 @@ export const CodeBar = (props: { repoMetadata: RepoMetadata }) => {
               </div>
               <div className="flex flex-row h-10 my-2">
                 <div className="whitespace-nowrap p-2 rounded-lg border border-[#30363d] select-all h-full">
-                  git clone http://{window.location.host}/git/repos/{props
+                  git clone http://{window.location.host}/git/repos/{props.repoMetadata.owner}/{props
                     .repoMetadata.name}
                 </div>
                 <button className="ml-2 px-2 rounded-lg hover:bg-[#2a2f36] transition duration-75 h-10 w-10" onClick={()=>{
-                  navigator.clipboard.writeText(`git clone http://${window.location.host}/git/repos/${props.repoMetadata.name}`)
+                  navigator.clipboard.writeText(`git clone http://${window.location.host}/git/repos/${props.repoMetadata.owner}/${props.repoMetadata.name}`)
                   toast("Copied to clipboard", {
                     style: {
                       backgroundColor: "#2a2f36",
@@ -72,9 +72,6 @@ export const CodeBar = (props: { repoMetadata: RepoMetadata }) => {
             </div>
           )}
         </div>
-      </div>
-      <div className="fixed">
-      <Toaster />
       </div>
 
     </div>

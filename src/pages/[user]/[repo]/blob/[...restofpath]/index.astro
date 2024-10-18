@@ -8,6 +8,17 @@ import { configureFreestyle, useCloud } from "freestyle-sh";
 import { FileIcon } from "../../../../../lib/icon-map";
 import type { AuthCS } from "../../../../../cloudstate/auth";
 import { RepoBar } from "../../../../../components/RepoBar";
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import markdown from 'highlight.js/lib/languages/markdown'; 
+import typescript from 'highlight.js/lib/languages/typescript';
+
+// Then register the languages you need
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('markdown', markdown);
+hljs.registerLanguage('typescript', typescript);
+
+
 
 configureFreestyle({
   createHeaders: () => Astro.request.headers,
@@ -32,6 +43,11 @@ const restOfPathAfterBranch = Astro.params.restofpath
   .slice(1)
   .join("/");
 const fileText = await simpleRepo.getFile(restOfPathAfterBranch!);
+
+const fileExtension: string = restOfPathAfterBranch?.split(".").pop() as string;
+console.log("FILE EXTENSION", fileExtension);
+
+const codeHtml = hljs.highlight(fileExtension, fileText).value;
 
 const auth = useCloud<typeof AuthCS>("auth");
 if (!auth.getCurrentUser()) {
@@ -65,6 +81,6 @@ if (!auth.getCurrentUser()) {
         })
       }
     </div>
-    <div class="m-4 p-2 rounded-lg">{fileText}</div>
+    <div class="m-4 p-2 rounded-lg"><pre set:html={codeHtml}></pre></div>
   </div>
 </Layout>
