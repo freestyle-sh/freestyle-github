@@ -70,7 +70,7 @@ export async function PROPFIND({
       </D:prop>
     </D:propstat>
   </D:response>
-</D:multistatus>`
+</D:multistatus>`,
   );
 }
 
@@ -91,7 +91,7 @@ export async function MKCOL({ params, request }: Parameters<APIRoute>[0]) {
           </D:prop>
         </D:propstat>
       </D:response>
-    </D:multistatus>`
+    </D:multistatus>`,
   );
 }
 
@@ -118,7 +118,7 @@ export async function LOCK({ params, request }: Parameters<APIRoute>[0]) {
           </D:activelock>
         </D:lockdiscovery>
       </D:prop>
-`
+`,
   );
 }
 
@@ -126,12 +126,12 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   // Put the contents of the body into params.path
   console.log("PUT", params);
 
-  if (!params.repo || !params.path) {
+  if (!params.repo || !params.user || !params.path) {
     return new Response(null, { status: 404 });
   }
 
   const { id } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
-    owner: "JacobZwang",
+    owner: params.user,
     name: params.repo,
   });
 
@@ -143,32 +143,32 @@ export async function PUT({ params, request }: Parameters<APIRoute>[0]) {
   const file = `${id}/.git/${params.path}`;
   const parent = dirname(file);
 
-  try {
-    fs.mkdirSync(parent, { recursive: true });
+  // try {
+  fs.mkdirSync(parent, { recursive: true });
 
-    fs.writeFileSync(file, await request.text());
-  } catch (e) {
-    console.error(e, "in PUT");
-    return new Response(null, { status: 404 });
-  }
+  fs.writeFileSync(file, await request.text());
 
-  store.sync();
+  // } catch (e) {
+  //   console.error(e, "in PUT");
+  //   return new Response(null, { status: 404 });
+  // }
 
-  // repo.setData = blob;
+  // store.sync();
+
   await repo.setData({
     data: JSON.stringify(
       Array.from(store.entries()).map(([key, value]) => [
         key.toString(),
         Array.from(value),
-      ])
+      ]),
     ),
   });
 
-  try {
-    fs.umount(`/${id}`);
-  } catch (e) {
-    console.warn("Failed to unmount", e);
-  }
+  // try {
+  //   fs.umount(`/${id}`);
+  // } catch (e) {
+  //   console.warn("Failed to unmount", e);
+  // }
 
   return new Response();
 }
@@ -187,7 +187,7 @@ export async function MOVE({ params, request }: Parameters<APIRoute>[0]) {
   }
 
   const { id, name } = await useCloud<typeof RepoIndex>("repo-index").getRepo({
-    owner: "JacobZwang",
+    owner: params.user,
     name: params.repo,
   });
 
@@ -228,15 +228,15 @@ export async function MOVE({ params, request }: Parameters<APIRoute>[0]) {
     return new Response(null, { status: 404 });
   }
 
-  // store.sync();
+  store.sync();
 
   // repo.setData = blob;
-  await repo.setData({
+  repo.setData({
     data: JSON.stringify(
       Array.from(store.entries()).map(([key, value]) => [
         key.toString(),
         Array.from(value),
-      ])
+      ]),
     ),
   });
 
